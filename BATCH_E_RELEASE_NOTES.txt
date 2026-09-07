@@ -1,0 +1,1 @@
+HaulMatch 360 Batch E adds PayFast credit checkout, sandbox/production separation, signed checkout fields, validated idempotent ITN, server-defined credit packs, wallet ledger, receipts, approved-transporter lead unlocks, award workflow, award-only contact release, disputes and controlled credit refunds. Batch D VPS runtime and Batch C trust controls are preserved.

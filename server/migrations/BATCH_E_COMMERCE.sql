@@ -1,0 +1,4 @@
+-- Generate and review an Alembic migration from SQLAlchemy metadata before production.
+-- Adds account.credit_balance, account.approved, lead.awarded_quote_id,
+-- credit_packs, payment_orders, payment_notifications, wallet_ledger,
+-- lead_unlocks, contact_reveals, disputes and receipts.

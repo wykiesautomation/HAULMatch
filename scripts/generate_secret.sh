@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+python3 -c "import secrets; print(secrets.token_urlsafe(64))"
