@@ -1,0 +1,1 @@
+Upload the CONTENTS of this ZIP directly to the HAULMatch repository main branch root. Replace the current README-rendered GitHub Pages content. Keep GitHub Pages configured as main / (root). The CNAME, .nojekyll, index.html, robots.txt and sitemap.xml are included.

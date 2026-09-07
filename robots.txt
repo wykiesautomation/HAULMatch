@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://haulmatch.wykiesautomation.co.za/sitemap.xml
