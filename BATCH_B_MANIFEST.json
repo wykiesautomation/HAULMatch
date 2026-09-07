@@ -1,0 +1,117 @@
+[
+  {
+    "path": ".nojekyll",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "BATCH_B_RELEASE_NOTES.txt",
+    "bytes": 427,
+    "sha256": "baf1fa679cf2ff8b5a97b407d8d413a2834f636af5c5d73d5202123a1b093b43"
+  },
+  {
+    "path": "BATCH_B_SETUP.md",
+    "bytes": 850,
+    "sha256": "cbcf51c49bb0a16ed4f9787be0d94b1164b64227d3ae31d57c47cf326d3113c9"
+  },
+  {
+    "path": "CNAME",
+    "bytes": 33,
+    "sha256": "3ec41dd8ecc1e259c5ebbd4db230b2f2846c1daa463b105939f00cdb2c80fccd"
+  },
+  {
+    "path": "PUBLISH_INSTRUCTIONS.txt",
+    "bytes": 185,
+    "sha256": "3cfb663f5eaee327b527ee7328b15fb123044bf714f95db2aa4ebe76b09cca7e"
+  },
+  {
+    "path": "UPDATE_APPS_SCRIPT.md",
+    "bytes": 332,
+    "sha256": "6d2df3a4327e59f788a5441b603f520ef1da938ff9ea1c67393339b812a2865c"
+  },
+  {
+    "path": "admin/index.html",
+    "bytes": 1309,
+    "sha256": "fccd1960dcc315b522de8c437914a2859ee9db0ee47596b75ea6cc110bb359df"
+  },
+  {
+    "path": "assets/config.js",
+    "bytes": 201,
+    "sha256": "96a11213e1d8c49f9c280d01868a38db092865d02f927aaad3185cb32fe2e5cc"
+  },
+  {
+    "path": "assets/forms.js",
+    "bytes": 5073,
+    "sha256": "01176d9dc1648aecbf9442b48d5094e33dafbd0c80751dd40321a6b984909b03"
+  },
+  {
+    "path": "assets/operations.js",
+    "bytes": 5905,
+    "sha256": "57588773bec403453f86aaa81143a3b2a779bcb42ad0bd20263b4d9ece766d9e"
+  },
+  {
+    "path": "assets/site.css",
+    "bytes": 3428,
+    "sha256": "c67a3639c52b4f327b90ef7051836dffbce425bc6c3fa7bf8f360acc2b14c798"
+  },
+  {
+    "path": "google-apps-script/Code.gs",
+    "bytes": 8178,
+    "sha256": "46061ce634ff2339feab6a8527260d08d9d98541fe5f67d225d2520fb76160c3"
+  },
+  {
+    "path": "index.html",
+    "bytes": 2428,
+    "sha256": "159e36273cf02238567e0c46a5af8da42259aebc31829e3c53c9266f026611a5"
+  },
+  {
+    "path": "join-transporter/index.html",
+    "bytes": 4542,
+    "sha256": "0d89ff8c3de743fec4040694d2ade3da2a087d5ca5af1281ad919db79f0ba4d5"
+  },
+  {
+    "path": "legal/credits/index.html",
+    "bytes": 978,
+    "sha256": "1f33f5709d02e355b6cf81f4eac0a9f6b11ac04a973035da28f101e9f3749625"
+  },
+  {
+    "path": "legal/privacy/index.html",
+    "bytes": 972,
+    "sha256": "537a52ecb2ccab2c511c7a0d7a26a7532310c549f21e1bc449054237fb770388"
+  },
+  {
+    "path": "legal/terms/index.html",
+    "bytes": 972,
+    "sha256": "f44ee99c1cd82c95bce8a4be402014256aa5cdddde1028024777c64495bb264d"
+  },
+  {
+    "path": "marketplace/index.html",
+    "bytes": 2093,
+    "sha256": "b3a6eed5a01e5472a5fa3d02daa9425ffb92428c2a61d2eb1b6fe1bcc52e40ba"
+  },
+  {
+    "path": "request-status/index.html",
+    "bytes": 1403,
+    "sha256": "3ba548964e503ff692845a83f847bfb7e30805cde14acb132f2e134292b341cc"
+  },
+  {
+    "path": "request-transport/index.html",
+    "bytes": 6879,
+    "sha256": "6a2a54edd313c047ff41991a18368ba396d120259d6b42db34cd6eb1bc349b96"
+  },
+  {
+    "path": "robots.txt",
+    "bytes": 85,
+    "sha256": "d21a4978385b13c2ef270fc0f5c55370b47d84cd071f603b59f5d99414a798b4"
+  },
+  {
+    "path": "sitemap.xml",
+    "bytes": 789,
+    "sha256": "72454f09014299885a885fa9d3c2f3695b878a9d280deaca058a6013e0051cb5"
+  },
+  {
+    "path": "submit-quote/index.html",
+    "bytes": 2344,
+    "sha256": "468c76e53b1b30808ba95d5a3740b8ba0343956d45f1052f5b48b88b51000180"
+  }
+]

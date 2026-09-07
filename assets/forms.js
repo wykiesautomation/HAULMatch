@@ -1,32 +1,16 @@
-
-const cfg=window.HAULMATCH_CONFIG||{};
-const $=id=>document.getElementById(id);
-function ref(prefix){const d=new Date(),stamp=d.toISOString().slice(0,10).replaceAll('-','');const rand=Math.random().toString(36).slice(2,8).toUpperCase();return `${prefix}-${stamp}-${rand}`}
-function configured(){return cfg.appsScriptUrl&&cfg.appsScriptUrl.startsWith('https://script.google.com/macros/s/')}
-function postHidden(form,payload){
- const frameName='hmSubmitFrame';let frame=$('hmSubmitFrame');if(!frame){frame=document.createElement('iframe');frame.name=frameName;frame.id='hmSubmitFrame';frame.className='hidden';document.body.appendChild(frame)}
- const f=document.createElement('form');f.method='POST';f.action=cfg.appsScriptUrl;f.target=frameName;f.className='hidden';
- const field=document.createElement('input');field.name='payload';field.value=JSON.stringify(payload);f.appendChild(field);document.body.appendChild(f);f.submit();setTimeout(()=>f.remove(),1000)
-}
-function val(id,msg){const el=$(id);if(!el||!String(el.value).trim()){el?.focus();throw new Error(msg)}return String(el.value).trim()}
-function email(id){const v=val(id,'Enter a valid email address');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))throw new Error('Enter a valid email address');return v.toLowerCase()}
-function phone(id){let v=val(id,'Enter a South African mobile number').replace(/\D/g,'');if(v.startsWith('27')&&v.length===11)return '+'+v;if(v.startsWith('0')&&v.length===10)return '+27'+v.slice(1);throw new Error('Enter a valid 10-digit South African mobile number')}
-function setupForm(kind){
- const form=$('leadForm'),error=$('formError'),success=$('successBox');if(!form)return;
- form.addEventListener('submit',e=>{e.preventDefault();error.textContent='';try{
-   if($('website').value)throw new Error('Submission blocked');
-   if(!configured())throw new Error('The form backend is not configured yet. Contact '+cfg.supportEmail+'.');
-   const data=kind==='request'?requestData():transporterData();data.formType=kind;data.reference=ref(kind==='request'?'HMREQ':'HMTRN');data.submittedAt=new Date().toISOString();data.page=location.href;data.userAgent=navigator.userAgent;
-   postHidden(form,data);form.reset();form.classList.add('hidden');success.classList.remove('hidden');$('referenceText').textContent=data.reference;window.scrollTo({top:0,behavior:'smooth'});
- }catch(ex){error.textContent=ex.message}})
-}
-function requestData(){
- const consent=$('consent').checked;if(!consent)throw new Error('Accept the privacy and contact consent to continue');
- return {fullName:val('fullName','Enter your full name'),email:email('email'),mobile:phone('mobile'),customerType:val('customerType','Select customer type'),transportType:val('transportType','Select transport type'),itemDescription:val('itemDescription','Describe the vehicle or implement'),makeModel:$('makeModel').value.trim(),condition:val('condition','Select the condition'),registration:$('registration').value.trim(),mass:$('mass').value.trim(),dimensions:$('dimensions').value.trim(),collectionTown:val('collectionTown','Enter collection town or area'),deliveryTown:val('deliveryTown','Enter delivery town or area'),requiredDate:val('requiredDate','Select required date'),loadingSupport:$('loadingSupport').value,photoLink:$('photoLink').value.trim(),notes:$('notes').value.trim(),consent:true}
-}
-function transporterData(){
- const consent=$('consent').checked;if(!consent)throw new Error('Accept the declaration to continue');
- const services=[...document.querySelectorAll('input[name="services"]:checked')].map(x=>x.value);if(!services.length)throw new Error('Select at least one transport service');
- return {fullName:val('fullName','Enter contact name'),company:val('company','Enter company or trading name'),email:email('email'),mobile:phone('mobile'),businessType:val('businessType','Select business type'),services:services.join(', '),serviceAreas:val('serviceAreas','Enter service areas'),vehicles:val('vehicles','Describe available vehicles'),payload:$('payload').value.trim(),lowbed:$('lowbed').value,insurance:$('insurance').value,registrationNumber:$('registrationNumber').value.trim(),experience:$('experience').value.trim(),notes:$('notes').value.trim(),consent:true}
-}
-document.addEventListener('DOMContentLoaded',()=>{const kind=document.body.dataset.form;if(kind)setupForm(kind)})
+const cfg=window.HAULMATCH_CONFIG||{},$=id=>document.getElementById(id);
+const vehicleCats=['Vehicle transport','Non-running vehicle','Towing or recovery'];
+const equipmentCats=['Tractor','Farm implement','Agricultural machinery','Construction equipment','Heavy equipment'];
+const goodsCats=['Pallets and commercial goods','Retail stock','Building materials','Farm produce','Refrigerated goods','Full truck load','Shared load','Return load'];
+const householdCats=['Furniture and household goods','Small load or bakkie delivery'];
+function ref(p){return `${p}-${new Date().toISOString().slice(0,10).replaceAll('-','')}-${Math.random().toString(36).slice(2,8).toUpperCase()}`}
+function val(id,msg){const e=$(id);if(!e||!String(e.value).trim()){e?.focus();throw new Error(msg)}return String(e.value).trim()}
+function email(){const v=val('email','Enter a valid email');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))throw new Error('Enter a valid email');return v.toLowerCase()}
+function phone(){let v=val('mobile','Enter a mobile number').replace(/\D/g,'');if(v.startsWith('27')&&v.length===11)return '+'+v;if(v.startsWith('0')&&v.length===10)return '+27'+v.slice(1);throw new Error('Enter a valid South African mobile number')}
+function showCategory(){const c=$('transportType')?.value||'';document.querySelectorAll('[data-cat]').forEach(x=>x.classList.add('hidden'));let id='generalFields';if(vehicleCats.includes(c))id='vehicleFields';else if(equipmentCats.includes(c))id='equipmentFields';else if(goodsCats.includes(c))id='goodsFields';else if(householdCats.includes(c))id='householdFields';else if(c==='Livestock transport')id='livestockFields';$(id)?.classList.remove('hidden')}
+function post(payload){const n='hmframe';let i=$(n);if(!i){i=document.createElement('iframe');i.id=n;i.name=n;i.className='hidden';document.body.appendChild(i)}const f=document.createElement('form');f.method='POST';f.action=cfg.appsScriptUrl;f.target=n;f.className='hidden';const x=document.createElement('input');x.name='payload';x.value=JSON.stringify(payload);f.appendChild(x);document.body.appendChild(f);f.submit();setTimeout(()=>f.remove(),1000)}
+function common(){return {fullName:val('fullName','Enter full name'),email:email(),mobile:phone(),customerType:val('customerType','Select customer type'),transportType:val('transportType','Select transport type'),itemDescription:val('itemDescription','Describe what must be transported'),quantity:$('quantity').value.trim(),mass:$('mass').value.trim(),dimensions:$('dimensions').value.trim(),collectionTown:val('collectionTown','Enter collection town'),deliveryTown:val('deliveryTown','Enter delivery town'),requiredDate:val('requiredDate','Select required date'),specialHandling:$('specialHandling').value,photoLink:$('photoLink').value.trim(),notes:$('notes').value.trim(),categoryDetails:categoryDetails(),consent:true}}
+function categoryDetails(){const ids=['makeModel','registration','condition','keysAvailable','equipmentType','manufacturer','mobility','palletCount','packaging','stackable','temperature','furnitureItems','loadingHelp','animalType','animalCount','loadingFacilities','otherType'];const o={};ids.forEach(id=>{if($(id))o[id]=$(id).value.trim()});return JSON.stringify(o)}
+function requestSubmit(e){e.preventDefault();$('formError').textContent='';try{if($('website').value)throw Error('Blocked');if(!$('consent').checked)throw Error('Accept consent');const d=common();d.formType='request';d.reference=ref('HMREQ');d.submittedAt=new Date().toISOString();post(d);$('leadForm').reset();$('leadForm').classList.add('hidden');$('successBox').classList.remove('hidden');$('referenceText').textContent=d.reference;scrollTo(0,0)}catch(x){$('formError').textContent=x.message}}
+function transporterSubmit(e){e.preventDefault();$('formError').textContent='';try{if($('website').value)throw Error('Blocked');if(!$('consent').checked)throw Error('Accept declaration');const services=[...document.querySelectorAll('[name=services]:checked')].map(x=>x.value);if(!services.length)throw Error('Select services');const d={formType:'transporter',reference:ref('HMTRN'),submittedAt:new Date().toISOString(),fullName:val('fullName','Enter name'),company:val('company','Enter company'),email:email(),mobile:phone(),businessType:val('businessType','Select business type'),services:services.join(', '),serviceAreas:val('serviceAreas','Enter service areas'),vehicles:val('vehicles','Describe vehicles'),payload:$('payload').value.trim(),insurance:$('insurance').value,registrationNumber:$('registrationNumber').value.trim(),experience:$('experience').value.trim(),notes:$('notes').value.trim(),consent:true};post(d);$('leadForm').reset();$('leadForm').classList.add('hidden');$('successBox').classList.remove('hidden');$('referenceText').textContent=d.reference;scrollTo(0,0)}catch(x){$('formError').textContent=x.message}}
+document.addEventListener('DOMContentLoaded',()=>{$('transportType')?.addEventListener('change',showCategory);$('leadForm')?.addEventListener('submit',document.body.dataset.form==='request'?requestSubmit:transporterSubmit)})

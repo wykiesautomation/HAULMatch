@@ -1,1 +1,1 @@
-Upload the CONTENTS of this folder to the HAULMatch repository main branch root. Configure assets/config.js with the deployed Google Apps Script URL before public form testing. Keep GitHub Pages set to main / (root).
+Upload the CONTENTS of this ZIP to the repository root. The existing Apps Script URL is preserved in assets/config.js. Update and redeploy Code.gs as described in UPDATE_APPS_SCRIPT.md.
