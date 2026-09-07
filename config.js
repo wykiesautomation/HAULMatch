@@ -1,0 +1,1 @@
+window.HAULMATCH_CONFIG={appsScriptUrl:"PASTE_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE",supportEmail:"support@wykiesautomation.co.za"};

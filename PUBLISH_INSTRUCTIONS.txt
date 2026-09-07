@@ -1,1 +1,1 @@
-Upload the CONTENTS of this ZIP directly to the HAULMatch repository main branch root. Replace the current README-rendered GitHub Pages content. Keep GitHub Pages configured as main / (root). The CNAME, .nojekyll, index.html, robots.txt and sitemap.xml are included.
+Upload the CONTENTS of this folder to the HAULMatch repository main branch root. Configure assets/config.js with the deployed Google Apps Script URL before public form testing. Keep GitHub Pages set to main / (root).
