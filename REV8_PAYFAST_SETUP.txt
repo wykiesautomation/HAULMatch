@@ -1,0 +1,13 @@
+HAULMATCH 360 REV8 PAYFAST SETUP
+
+1. Create and test with a PayFast sandbox account.
+2. Copy .env.example to .env.
+3. Set HAULMATCH_PAYFAST_MODE=sandbox.
+4. Set merchant ID, merchant key and passphrase.
+5. Set public HTTPS return, cancel and notify URLs. Local 127.0.0.1 notify URLs cannot receive PayFast ITNs.
+6. Restart HaulMatch.
+7. A browser return never credits the wallet. Only a signature, merchant, reference, amount and COMPLETE status validated ITN can post credits.
+8. Duplicate ITNs are stored once and do not duplicate credits.
+
+Production: change mode to production only after sandbox completion and HTTPS deployment.
+Transport payments are never processed by this integration.

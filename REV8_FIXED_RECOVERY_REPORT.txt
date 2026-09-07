@@ -1,0 +1,3 @@
+REV8_FIXED RECOVERY REPORT
+
+This build restores the missing REV6 routing layer and separates operations/pricing modules while retaining REV7 and REV8 APIs. The package is validated by module inventory, Python compilation, ZIP integrity, secret scanning and endpoint preservation checks. ZIP size is not used as the only quality measure; file/module preservation is checked explicitly.

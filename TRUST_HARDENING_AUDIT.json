@@ -1,0 +1,51 @@
+{
+  "REV6": {
+    "app/routing/provider.py": true,
+    "app/routing/tokens.py": true,
+    "app/pricing.py": true
+  },
+  "REV7": {
+    "app/operations.py": true,
+    "uploads/.gitkeep": true
+  },
+  "REV8": {
+    "app/payfast.py": true,
+    "app/commerce.py": true
+  },
+  "REV9": {
+    "app/config.py": true,
+    "app/production.py": true,
+    "Dockerfile": true,
+    "docker-compose.production.yml": true
+  },
+  "FOCUSED_SEO": {
+    "app/seo.py": true,
+    "app/publishing.py": true,
+    "FOCUSED_SEO_AUDIT.json": true
+  },
+  "TRUST": {
+    "app/trust.py": true,
+    "app/risk_engine.py": true,
+    "app/rate_limit.py": true,
+    "app/messaging.py": true,
+    "TRUST_HARDENING_SETUP.md": true,
+    "tests/test_trust.py": true
+  },
+  "all_required": true,
+  "api_route_count": 61,
+  "trust_routes": [
+    "/api/verify/email",
+    "/api/verify/phone",
+    "/api/verify/resend",
+    "/api/jobs/{jid}/contact",
+    "/api/me/trust"
+  ],
+  "external_launch_gates": [
+    "real email provider",
+    "real SMS provider",
+    "CAPTCHA/Turnstile",
+    "DNS/MX validation",
+    "malware scanning",
+    "reviewed Alembic migration"
+  ]
+}

@@ -1,0 +1,4 @@
+REV8 ADMIN GUIDE
+
+Use admin@haulmatch.local / ChangeMe123! for local testing.
+Admin Trust Cockpit covers overview metrics, transporter verification, disputes, refunds and audit events. All approved refunds create a new linked wallet credit. Original debits remain in the ledger. Suspensions preserve evidence and history.

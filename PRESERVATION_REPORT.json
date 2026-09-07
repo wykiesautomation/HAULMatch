@@ -1,0 +1,59 @@
+{
+  "REV6": {
+    "app/routing/provider.py": true,
+    "app/routing/tokens.py": true,
+    "app/pricing.py": true
+  },
+  "REV7": {
+    "app/operations.py": true,
+    "uploads/.gitkeep": true
+  },
+  "REV8": {
+    "app/payfast.py": true,
+    "app/commerce.py": true,
+    "REV8_PAYFAST_SETUP.txt": true,
+    "REV8_ADMIN_GUIDE.txt": true
+  },
+  "api_route_count": 38,
+  "api_routes": [
+    "/",
+    "/api/login",
+    "/api/me",
+    "/api/loads",
+    "/api/loads/{lid}/unlock",
+    "/api/loads/{lid}/quote",
+    "/api/customer/loads",
+    "/api/quotes/{qid}/accept",
+    "/api/vehicles",
+    "/api/drivers",
+    "/api/jobs",
+    "/api/jobs/{jid}/assign",
+    "/api/jobs/{jid}/milestone",
+    "/api/jobs/{jid}/incident",
+    "/api/jobs/{jid}/evidence",
+    "/api/jobs/{jid}/pod",
+    "/api/jobs/{jid}/confirm",
+    "/api/jobs/{jid}/rating",
+    "/api/credit-packs",
+    "/api/payments/payfast/checkout",
+    "/api/payments/payfast/itn",
+    "/api/wallet",
+    "/api/unlocks/{unlock_id}/disputes",
+    "/api/notifications",
+    "/api/notifications/{nid}/read",
+    "/api/admin/overview",
+    "/api/admin/verifications",
+    "/api/admin/verifications/{vid}/decision",
+    "/api/admin/disputes",
+    "/api/admin/disputes/{did}/decision",
+    "/api/admin/audit",
+    "/api/admin/risk",
+    "/api/admin/users/{uid}/suspend",
+    "/api/register",
+    "/api/routes/status",
+    "/api/locations/search",
+    "/api/routes/preview",
+    "/api/loads"
+  ],
+  "all_required": true
+}

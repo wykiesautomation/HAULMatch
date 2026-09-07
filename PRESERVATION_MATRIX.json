@@ -1,0 +1,45 @@
+{
+  "REV5_accounts_award": [
+    "login",
+    "roles",
+    "marketplace",
+    "unlock",
+    "quote",
+    "accept",
+    "job creation"
+  ],
+  "REV6_maps_routes": [
+    "ORS address autocomplete",
+    "driving-hgv route",
+    "distance",
+    "duration",
+    "GeoJSON",
+    "one-use route token",
+    "server pricing"
+  ],
+  "REV7_operations_pod": [
+    "vehicles",
+    "drivers",
+    "compliance",
+    "assignments",
+    "milestones",
+    "incidents",
+    "evidence",
+    "POD",
+    "confirmation",
+    "ratings"
+  ],
+  "REV8_commerce_trust": [
+    "credit packs",
+    "PayFast checkout",
+    "ITN validation",
+    "idempotent credits",
+    "wallet ledger",
+    "disputes",
+    "refunds",
+    "verification",
+    "notifications",
+    "risk",
+    "audit"
+  ]
+}

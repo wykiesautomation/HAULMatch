@@ -1,0 +1,26 @@
+{
+  "focused_live_scope": true,
+  "published_pages": [
+    "vehicle-transport",
+    "car-transport",
+    "bakkie-transport",
+    "non-running-vehicle-transport",
+    "tractor-transport",
+    "farm-implement-transport",
+    "agricultural-machinery-transport",
+    "heavy-equipment-transport",
+    "lowbed-transport",
+    "towing-and-recovery"
+  ],
+  "excluded": [
+    "livestock",
+    "pallets",
+    "furniture",
+    "household removals",
+    "general freight"
+  ],
+  "dynamic_sitemap": true,
+  "dynamic_robots": true,
+  "structured_data": true,
+  "api_route_count": 56
+}

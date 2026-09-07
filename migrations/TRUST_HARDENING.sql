@@ -1,0 +1,5 @@
+-- TRUST HARDENING REFERENCE MIGRATION
+-- Add User: email_verified_at, phone_verified_at, identity_verified_at, business_verified_at,
+-- failed_login_count, locked_until, created_at.
+-- Create: email_verification_tokens, phone_otps, contact_reveals, load_evidence.
+-- Existing deployments must generate and review an Alembic migration before upgrade.

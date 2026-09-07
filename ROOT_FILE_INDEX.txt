@@ -1,0 +1,17 @@
+HAULMATCH 360 GITHUB ROOT FILES
+
+README.md - product and deployment overview
+LICENSE - proprietary copyright notice
+SECURITY.md - private vulnerability reporting policy
+CONTRIBUTING.md - controlled contribution rules
+CODE_OF_CONDUCT.md - repository conduct and data-protection rules
+.gitignore / .dockerignore - excludes secrets, runtime databases, uploads, backups and certificates
+.env.example / .env.production.example - configuration templates without credentials
+Dockerfile / docker-compose.production.yml - deployment baseline
+PRODUCTION_DEPLOYMENT_GUIDE.md - deployment steps
+SECURITY_CHECKLIST.md - release security gate
+FINAL_ACCEPTANCE_REPORT.md - launch status and external gates
+REV9_PRESERVATION_REPORT.json - cumulative module evidence
+BUILD_MANIFEST.json - file inventory and hashes
+GitHub_Upload_REV9.ps1 - repository upload helper
+robots.txt and sitemap.xml - generated dynamically by backend using HAULMATCH_PUBLIC_BASE_URL

@@ -1,0 +1,28 @@
+{
+  "source": "HaulMatch_360_Production_Release_REV9.zip",
+  "github_ready": true,
+  "root_files": [
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md",
+    "ROOT_FILE_INDEX.txt",
+    ".gitignore",
+    ".dockerignore",
+    ".env.example",
+    ".env.production.example",
+    ".github/workflows/ci.yml",
+    ".github/dependabot.yml",
+    ".github/ISSUE_TEMPLATE/bug_report.yml",
+    ".github/pull_request_template.md",
+    "app/publishing.py",
+    "tests/test_publishing.py",
+    "REV9_PRESERVATION_REPORT.json"
+  ],
+  "api_route_count": 55,
+  "robots_endpoint": "/robots.txt",
+  "sitemap_endpoint": "/sitemap.xml",
+  "domain_configuration": "HAULMATCH_PUBLIC_BASE_URL",
+  "secrets_found": false
+}

@@ -1,0 +1,7 @@
+HaulMatch 360 REV9 - Production Finalisation
+
+Built exclusively from REV8_FIXED after its preservation gate passed.
+Adds production settings validation, PostgreSQL driver, Alembic structure, Docker image, PostgreSQL/Nginx Compose deployment, HTTPS proxy template, security headers, request IDs, health endpoints, private content-addressed upload storage helper, backup/restore scripts, preflight checks, automated preservation/config/storage/health tests, legal draft pages, GitHub Actions CI, GitHub upload helper, production deployment guide and security checklist.
+
+REV6 routing, REV7 fleet operations/POD and REV8 PayFast/admin/trust modules remain present.
+Transport charges remain direct between customer and transporter.

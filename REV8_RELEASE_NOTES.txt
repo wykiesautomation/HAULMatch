@@ -1,0 +1,1 @@
+HaulMatch 360 REV8: PayFast Credits, Admin and Trust. Adds server-defined packs, signed PayFast checkout, validated idempotent ITN, wallet ledger, payment history, disputes and credit refunds, transporter verification, notifications, admin overview, risk flags, suspension and audit trail. Transport payments remain direct between customer and transporter.

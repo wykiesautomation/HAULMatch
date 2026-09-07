@@ -1,0 +1,5 @@
+HaulMatch 360 Trust Hardened
+
+Adds canonical email validation, disposable-email blocking, South African +27 phone normalisation, time-limited single-use email verification tokens, SMS OTP records with expiry and attempt limits, registration/OTP/resend throttling, layered trust levels, duplicate-phone and activity risk rules, verified-contact gates for customer load posting, approved-transporter gates for unlocking, award-only contact reveal, contact-reveal audit logging, trust UI, migration reference and automated tests.
+
+External provider credentials, CAPTCHA service, DNS/MX checks and malware scanner remain deployment integrations and are explicitly listed as launch gates.

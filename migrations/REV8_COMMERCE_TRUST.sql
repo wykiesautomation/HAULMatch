@@ -1,0 +1,1 @@
+-- Reference migration: create credit_packs, payment_orders, payment_notifications, wallet_ledger, disputes, verification_cases, compliance_documents, risk_flags, notifications and audit_events. New local databases are created by SQLAlchemy.
