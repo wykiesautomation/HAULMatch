@@ -1,0 +1,9 @@
+.env
+.env.production
+deploy/certs/*.pem
+deploy/certs/*.key
+!deploy/certs/.gitkeep
+backups/
+private_uploads/
+__pycache__/
+*.pyc

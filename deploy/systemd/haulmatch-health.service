@@ -1,0 +1,7 @@
+[Unit]
+Description=HaulMatch health check
+After=network-online.target
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/haulmatch
+ExecStart=/bin/sh /opt/haulmatch/deploy/monitoring/healthcheck.sh

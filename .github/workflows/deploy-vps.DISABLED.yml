@@ -1,0 +1,21 @@
+name: Deploy HaulMatch VPS
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['server/**','deploy/**','docker-compose.production.yml','assets/**','index.html','request-transport/**','marketplace/**','admin/**']
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/haulmatch
+            git pull origin main
+            sh scripts/deploy.sh

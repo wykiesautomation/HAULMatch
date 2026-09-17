@@ -1,0 +1,10 @@
+source_sheet,source_key,target_table,target_field,rule
+Transport Requests,Reference,leads,reference,unique immutable
+Transport Requests,Transport Type,leads,transport_type,direct
+Transport Requests,Email,accounts,email,normalise lowercase
+Transporter Applications,Reference,accounts,external_reference,unique immutable
+Test Wallets,Credits,accounts,credit_balance,reconcile with ledger
+Lead Unlocks,Unlock Reference,lead_unlocks,external_reference,unique immutable
+Quotes,Quote Reference,quotes,reference,unique immutable
+Quote Decisions,Status,quotes,status,controlled mapping
+Appointments,Appointment Reference,jobs,external_reference,unique immutable

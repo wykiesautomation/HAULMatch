@@ -1,0 +1,327 @@
+[
+  {
+    "path": ".env.production.example",
+    "bytes": 663,
+    "sha256": "bf4e58768f12d9c40cfaeb6c983ebec59a39220b1d3e02defb6bcb7ae216149a"
+  },
+  {
+    "path": ".github/workflows/deploy-vps.yml",
+    "bytes": 641,
+    "sha256": "399331ceef4159fb13dd2863bedaeea263aa624bd962c91a3ee2b30990c2fce4"
+  },
+  {
+    "path": ".gitignore",
+    "bytes": 127,
+    "sha256": "877d9090134dde18c989401b8dbf6688f6484957bc57180248fa64d4db1c0123"
+  },
+  {
+    "path": ".nojekyll",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "BATCH_B_MANIFEST.json",
+    "bytes": 3295,
+    "sha256": "4dda92334ca3d9345022e4f072f9d3b1273d28868b7a67760120a1211ca43b45"
+  },
+  {
+    "path": "BATCH_B_RELEASE_NOTES.txt",
+    "bytes": 427,
+    "sha256": "baf1fa679cf2ff8b5a97b407d8d413a2834f636af5c5d73d5202123a1b093b43"
+  },
+  {
+    "path": "BATCH_B_SETUP.md",
+    "bytes": 850,
+    "sha256": "cbcf51c49bb0a16ed4f9787be0d94b1164b64227d3ae31d57c47cf326d3113c9"
+  },
+  {
+    "path": "BATCH_C_MANIFEST.json",
+    "bytes": 4022,
+    "sha256": "e031e9fa8afa3e2a358fc951c0aed4754917f626d6ceb8229b23d7d07b617cf0"
+  },
+  {
+    "path": "BATCH_C_RELEASE_NOTES.txt",
+    "bytes": 434,
+    "sha256": "eaaa91d046069977a4e308e44abb09c4a882145b600835a7ccaf699905abe118"
+  },
+  {
+    "path": "BATCH_C_SETUP.md",
+    "bytes": 954,
+    "sha256": "2498ebdbbca1678eba331624df102d64ec3012a1bf457925fbc10f2fd2e047c2"
+  },
+  {
+    "path": "BATCH_D_DEPLOYMENT_GUIDE.md",
+    "bytes": 1766,
+    "sha256": "6af351ae17693ceac2497d288f91d8236ebec8104de037336b4f1abe6202d035"
+  },
+  {
+    "path": "BATCH_D_MANIFEST.json",
+    "bytes": 7655,
+    "sha256": "75198e24b1e810314a8acb8b8b4ee9ead284e8071bb6b221f1237c14d3f19fd7"
+  },
+  {
+    "path": "BATCH_D_RELEASE_NOTES.txt",
+    "bytes": 447,
+    "sha256": "096069e4ab4f3db77b2bc0e810a7393fc992c39bef6fa14284cad193f15a5ce5"
+  },
+  {
+    "path": "BATCH_E_ACCEPTANCE.md",
+    "bytes": 585,
+    "sha256": "6d265263e5c48c81f2c869811814d94cb6e6894c9318e75290461c6a298757e2"
+  },
+  {
+    "path": "BATCH_E_RELEASE_NOTES.txt",
+    "bytes": 367,
+    "sha256": "d21737a8351c47aba0ab5b9daa2ade93cdf3b38162ab78e6b7ac6bb0a08e098b"
+  },
+  {
+    "path": "BATCH_E_SETUP.md",
+    "bytes": 1072,
+    "sha256": "fcf63ba7566ec88b8002161aa2cdf9f1542afcda7c6bbed9b4c276881b9cb053"
+  },
+  {
+    "path": "CNAME",
+    "bytes": 33,
+    "sha256": "3ec41dd8ecc1e259c5ebbd4db230b2f2846c1daa463b105939f00cdb2c80fccd"
+  },
+  {
+    "path": "PUBLISH_INSTRUCTIONS.txt",
+    "bytes": 185,
+    "sha256": "3cfb663f5eaee327b527ee7328b15fb123044bf714f95db2aa4ebe76b09cca7e"
+  },
+  {
+    "path": "UPDATE_APPS_SCRIPT.md",
+    "bytes": 332,
+    "sha256": "6d2df3a4327e59f788a5441b603f520ef1da938ff9ea1c67393339b812a2865c"
+  },
+  {
+    "path": "VPS_GO_LIVE_CHECKLIST.md",
+    "bytes": 821,
+    "sha256": "b533a044e0dce85178dd2fec5d6cb38be275ea52322860f3c20f7bf0b4c98b62"
+  },
+  {
+    "path": "admin/index.html",
+    "bytes": 1457,
+    "sha256": "e8357af8c23a82f5fc0964b15c2e7cd36556f0ae63acca3e2c072da0f83ac323"
+  },
+  {
+    "path": "assets/config.js",
+    "bytes": 221,
+    "sha256": "c845903a871a4753df2bccd1ec6cc9306a6f5b8fa53fcefbadea86635313d8d0"
+  },
+  {
+    "path": "assets/forms.js",
+    "bytes": 5200,
+    "sha256": "6ed7ac2c6327dad61f891f4a2964ebb5157be1d101f6ebcd715acbb7a7d6d7ad"
+  },
+  {
+    "path": "assets/operations.js",
+    "bytes": 7675,
+    "sha256": "b641a12b0d45a5135f8a52bc5b7e1d27c5f3d2ab4fd1daf8bfca81be78ea7ad4"
+  },
+  {
+    "path": "assets/site.css",
+    "bytes": 3725,
+    "sha256": "9b87f4223ee94b4fac07bb8566295eef26aa5d28a9cfefa7ce6400db9ad36d66"
+  },
+  {
+    "path": "assets/trust.js",
+    "bytes": 1505,
+    "sha256": "a8f12e8262682cbb40390e15f054f70c850950a98f1625fb295dcf6108d40677"
+  },
+  {
+    "path": "deploy/certs/.gitkeep",
+    "bytes": 52,
+    "sha256": "09c13d704d12d853d30bc97d83d2082b5cb570d35e6e034fe15c95522d0bd722"
+  },
+  {
+    "path": "deploy/nginx.conf",
+    "bytes": 856,
+    "sha256": "f4a1a87e4f8238221e6806bdfe863af264bb319e85e66b00de8136774ceac64f"
+  },
+  {
+    "path": "docker-compose.production.yml",
+    "bytes": 887,
+    "sha256": "3cabbd0f2d04b57dbe71783c4c99d6870a8cf757dfa3ed491e5b55eb9d14bc4c"
+  },
+  {
+    "path": "google-apps-script/Code.gs",
+    "bytes": 12775,
+    "sha256": "8b77562f4271f4c8d5f7db00c50bbd1fdd2d072ac69a7797e7eb4495d7a6faf4"
+  },
+  {
+    "path": "index.html",
+    "bytes": 2468,
+    "sha256": "8b814dfb581fce0e081de30dd4b1dbe57bf411893c0186ebcd0f6496e1c9ca53"
+  },
+  {
+    "path": "join-transporter/index.html",
+    "bytes": 4582,
+    "sha256": "8ac75d7ec2776c05ea6d5e078a0d69be87a98a84f2eb004efb74897d75dc239a"
+  },
+  {
+    "path": "legal/credits/index.html",
+    "bytes": 1018,
+    "sha256": "8bcd7e1788209dea2f69654d2ad93789ea01853228b479a87a320b2c3d9860e2"
+  },
+  {
+    "path": "legal/privacy/index.html",
+    "bytes": 1012,
+    "sha256": "2ec18b62b4b8a8758c91ad1f69aad8672608a7b1d86e205f01c7f9dddd4b535e"
+  },
+  {
+    "path": "legal/terms/index.html",
+    "bytes": 1012,
+    "sha256": "1f5986f21af1db4424f13453c1d0d533c2c8d4db377da538a1e05a77b09bd9cb"
+  },
+  {
+    "path": "marketplace/index.html",
+    "bytes": 2093,
+    "sha256": "b3a6eed5a01e5472a5fa3d02daa9425ffb92428c2a61d2eb1b6fe1bcc52e40ba"
+  },
+  {
+    "path": "payments/cancel/index.html",
+    "bytes": 809,
+    "sha256": "0aa609929e8b6d316b17db43eb446717d877e74f8dcc0e6998a27497bbbd4f4f"
+  },
+  {
+    "path": "payments/return/index.html",
+    "bytes": 905,
+    "sha256": "f3678196e4d2a36643c941cabb9964c8cce316b57807505ecfeb5364a6e2435d"
+  },
+  {
+    "path": "request-status/index.html",
+    "bytes": 1403,
+    "sha256": "3ba548964e503ff692845a83f847bfb7e30805cde14acb132f2e134292b341cc"
+  },
+  {
+    "path": "request-transport/index.html",
+    "bytes": 6919,
+    "sha256": "3325c1f55de6396d470e42a67d827be1eb044032a4d3dd934d864979050b03e3"
+  },
+  {
+    "path": "robots.txt",
+    "bytes": 85,
+    "sha256": "d21a4978385b13c2ef270fc0f5c55370b47d84cd071f603b59f5d99414a798b4"
+  },
+  {
+    "path": "scripts/backup.sh",
+    "bytes": 311,
+    "sha256": "a0c8b86072c256856397bdf40f8f7988d5ba9bb7e4d45eb35db99ca09329b322"
+  },
+  {
+    "path": "scripts/deploy.sh",
+    "bytes": 216,
+    "sha256": "4e3531e081c81925af2431f58a427a91b7ef073ff82cd1388b088e8be45f8354"
+  },
+  {
+    "path": "scripts/firewall.sh",
+    "bytes": 170,
+    "sha256": "966b9953ee71638425bccfcb09a79898d2e4e7f1436896cd63a0a67f39942a74"
+  },
+  {
+    "path": "scripts/generate_secret.sh",
+    "bytes": 80,
+    "sha256": "5e44770c5b3324777b1b10bc539736790f597c5c50845909b23baa6a7b5b150a"
+  },
+  {
+    "path": "scripts/preflight.sh",
+    "bytes": 481,
+    "sha256": "800ac3fab7dc0232be65d0151c429938fa66c18f2b6e88398b06dddba40cc0ad"
+  },
+  {
+    "path": "scripts/restore.sh",
+    "bytes": 227,
+    "sha256": "1f34eee5a58c2b1b27ff212e035f496a8beb51bde3923e8f263f7cb977bb39c7"
+  },
+  {
+    "path": "server/Dockerfile",
+    "bytes": 537,
+    "sha256": "d006213663055d96fd2a581c9caf5ad70b379a94807ab1f0ca0b5cb685978b41"
+  },
+  {
+    "path": "server/app/__init__.py",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "server/app/commerce.py",
+    "bytes": 728,
+    "sha256": "36756c1b173b6acb2f65e91a307729147dd1261b1340e52df8ce2dda0bc0d65c"
+  },
+  {
+    "path": "server/app/config.py",
+    "bytes": 1612,
+    "sha256": "35eddce0f4c8d4f415dc5756db0d58b3fec2a6b60963d3088c7b35f1ffbdc632"
+  },
+  {
+    "path": "server/app/database.py",
+    "bytes": 437,
+    "sha256": "859bd51773811e10d390d3af50ddaf7a81b518441dea82b6c0815b9df8f928b4"
+  },
+  {
+    "path": "server/app/main.py",
+    "bytes": 14250,
+    "sha256": "557a36ffa0fdd2ed7dc7e7fbcc1853256f688896ae3d5970713a73eef69764f0"
+  },
+  {
+    "path": "server/app/models.py",
+    "bytes": 5100,
+    "sha256": "95dfcdeede9e3ad019e94df01743ea963edb26f73edf4affd2e55034ec2fb8d9"
+  },
+  {
+    "path": "server/app/payfast.py",
+    "bytes": 1745,
+    "sha256": "f562908106b6ea3647b54877c51eea83327a0b03d512bf25ca62539110aeb7c9"
+  },
+  {
+    "path": "server/app/security.py",
+    "bytes": 1516,
+    "sha256": "f1c392a85a9ba39dd5a94dc0b3bd8231e453ddc563c0420a2d637ebee557f9e6"
+  },
+  {
+    "path": "server/app/storage.py",
+    "bytes": 791,
+    "sha256": "b4cdfe9e4cbee695b94f932e5286e38ddb9f88333dffb3ac140a42c83bad8d82"
+  },
+  {
+    "path": "server/migrations/BATCH_E_COMMERCE.sql",
+    "bytes": 289,
+    "sha256": "58cfabae7246e3e58d1694c2dba41e6fe910df70913a90028ffd5defcc53f534"
+  },
+  {
+    "path": "server/requirements.txt",
+    "bytes": 211,
+    "sha256": "43d34fe8298c7413924437b29ce537e5d74561aa24bb02de66f81cbd4914e315"
+  },
+  {
+    "path": "server/tests/test_commerce.py",
+    "bytes": 345,
+    "sha256": "df580472feab32033b3e808d32f95bde15069bd01b51a069f0ab559a25bfd6ef"
+  },
+  {
+    "path": "server/tests/test_payfast.py",
+    "bytes": 181,
+    "sha256": "3e1077b42556181dfe9dfb604e1a47321f168c3bc7d9765e0cc078532a824843"
+  },
+  {
+    "path": "sitemap.xml",
+    "bytes": 935,
+    "sha256": "94c53c7d930cbaad3d50f326e81c4bb3df1a84826e6cc3c7403f31fe2b7d8082"
+  },
+  {
+    "path": "submit-quote/index.html",
+    "bytes": 2344,
+    "sha256": "468c76e53b1b30808ba95d5a3740b8ba0343956d45f1052f5b48b88b51000180"
+  },
+  {
+    "path": "trust-safety/index.html",
+    "bytes": 1448,
+    "sha256": "1aaefec5cf9c447d6edc78aaa39dd4dfb013a93046407741e565670d3b8a572f"
+  },
+  {
+    "path": "wallet/index.html",
+    "bytes": 1515,
+    "sha256": "9514c3a9b396c5a3ccc4b19afb23f941b6ce1b4b9f2b1c5439151a7c92d844d5"
+  }
+]

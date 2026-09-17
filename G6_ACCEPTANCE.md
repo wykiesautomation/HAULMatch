@@ -1,0 +1,14 @@
+# G6 Acceptance Gates
+- Credit pack amount and credits are read from Credit Packs, not browser input
+- Pending order does not credit wallet
+- COMPLETE decision credits exactly once
+- Repeating COMPLETE does not duplicate credits
+- FAILED order does not credit wallet
+- Wallet adjustment requires admin key and reason
+- Refund approval posts a linked credit transaction once
+- Invoice and receipt PDF records exist for completed payment
+- Credit-note PDF exists for approved refund
+- Wallet-statement PDF includes ledger entries
+- Finance reconciliation balances
+- All sandbox screens state that no real money is processed
+- Real PayFast remains disabled until VPS, public HTTPS ITN and sandbox acceptance are complete
