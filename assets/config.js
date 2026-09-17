@@ -1,1 +1,1 @@
-window.HAULMATCH_CONFIG={appsScriptUrl:"https://script.google.com/macros/s/AKfycbw0vLRtWJ_jDWLanasdrc7DLlog-QlGDTPMOmqMmH1Q5igcubRHYb-mIoUqnwmxbZNU/exec",supportEmail:"support@wykiesautomation.co.za",turnstileSiteKey:""};
+window.HAULMATCH_CONFIG={appsScriptUrl:"https://script.google.com/macros/s/AKfycbwqlzBjVYWyk7LQVczAEt9Oa2v6MnMQ-LbbtZuqPmJ6sjjqIEracGHbOkDRBFoaweWo/exec",supportEmail:"support@wykiesautomation.co.za",turnstileSiteKey:""};
