@@ -1,3 +1,0 @@
--- Generate and review an Alembic migration from SQLAlchemy metadata.
--- Adds vehicles, drivers, jobs, job_events, incidents, evidence, pods, ratings and backup_verifications.
--- Adds compliance and operational indexes and foreign keys.

@@ -1,1 +1,0 @@
-Upload the CONTENTS of this ZIP to the repository root. The existing Apps Script URL is preserved in assets/config.js. Update and redeploy Code.gs as described in UPDATE_APPS_SCRIPT.md.
