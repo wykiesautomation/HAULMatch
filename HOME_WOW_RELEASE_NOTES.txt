@@ -1,0 +1,11 @@
+HaulMatch 360 Home WOW Release
+
+- Added photorealistic AI-generated active truck hero visual.
+- Added responsive desktop, tablet and mobile hero layouts.
+- Added live approved lead section directly on Home.
+- Added customer, transporter and trust value cards.
+- Added privacy, moderation, speed and credit trust strip.
+- Preserved request upload, Apps Script, Admin, wallet, quote and finance workflows.
+- Included latest platform iframe API and top-window Apps Script response fixes.
+
+Deploy the contents of this ZIP to the repository root. Then replace the active Apps Script Code.gs with google-apps-script/Code.gs and deploy a new version while keeping the existing /exec URL.

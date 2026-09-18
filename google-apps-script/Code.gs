@@ -6,9 +6,126 @@ const DISPOSABLE=['mailinator.com','yopmail.com','guerrillamail.com','10minutema
 const RH=['Submitted','Reference','Name','Email','Mobile','Customer Type','Transport Type','Description','Quantity','Mass','Dimensions','Collection','Delivery','Required Date','Special Handling','Category Details','Photo Link','Notes','Consent','Status','Public Note','Updated At','Risk Score','Moderation Status','Device Fingerprint'];
 const TH=['Submitted','Reference','Contact','Company','Email','Mobile','Business Type','Services','Service Areas','Vehicles','Payload','Insurance','Registration No','Experience','Notes','Consent','Status','Risk Score','Moderation Status','Device Fingerprint'];
 const QH=['Submitted','Quote Reference','Request Reference','Transporter Reference','Email','Mobile','Amount','Vehicle','Availability','Collection Date','Delivery Estimate','Terms','Status','Risk Score'];
-function out_(o,cb){const t=JSON.stringify(o);return ContentService.createTextOutput(cb?cb+'('+t+')':t).setMimeType(cb?ContentService.MimeType.JAVASCRIPT:ContentService.MimeType.JSON)}
-function doGet(e){try{const a=e.parameter.action||'health',cb=e.parameter.callback||'';if(a==='health')return out_({ok:true,service:'HaulMatch Trust and Moderation'},cb);if(a==='marketplace')return out_({ok:true,items:marketplace_()},cb);if(a==='status')return out_(status_(e.parameter.reference,e.parameter.email),cb);if(a==='admin')return out_(admin_(e.parameter.key),cb);if(a==='moderation')return out_(moderation_(e.parameter.key),cb);if(a==='gLeads')return out_({ok:true,items:gLeads_()},cb);if(a==='gWallet')return out_(gWallet_(e.parameter.transporterReference,e.parameter.email),cb);if(a==='gUnlock')return out_(gUnlock_(e.parameter.reference,e.parameter.transporterReference,e.parameter.email),cb);if(a==='gPro')return out_(gPro_(e.parameter.transporterReference,e.parameter.email),cb);if(a==='gCustomerQuotes')return out_(gCustomerQuotes_(e.parameter.reference,e.parameter.email),cb);if(a==='gAppointments')return out_(gAppointments_(e.parameter.reference,e.parameter.email),cb);if(a==='gAdmin')return out_(gAdmin_(e.parameter.key),cb);if(a==='g6Packs')return out_({ok:true,items:g6Packs_()},cb);if(a==='g6Wallet')return out_(g6Wallet_(e.parameter.transporterReference,e.parameter.email),cb);if(a==='g6Documents')return out_(g6Documents_(e.parameter.transporterReference,e.parameter.email),cb);if(a==='g6Admin')return out_(g6Admin_(e.parameter.key),cb);if(a==='g6Reconcile')return out_(g6Reconcile_(e.parameter.key),cb);return out_({ok:false,error:'Unknown action'},cb)}catch(x){return out_({ok:false,error:x.message},e.parameter.callback||'')}}
-function doPost(e){try{const d=JSON.parse((e.parameter&&e.parameter.payload)||'{}');if(!d.formType||!d.reference||d.website)throw Error('Invalid submission');if(['request','transporter'].includes(d.formType)&&!verifyTurnstile_(d.turnstileToken))throw Error('Bot verification failed');const ss=SpreadsheetApp.openById(SHEET_ID);if(d.formType==='request'){d.photoLink=g7SaveUploads_(ss,d.uploads||[],d.reference,d.photoLink||'');delete d.uploads;saveRequest_(ss,d);}else if(d.formType==='transporter')saveTransporter_(ss,d);else if(d.formType==='quote')saveQuote_(ss,d);else if(d.formType==='adminAction')adminAction_(ss,d);else if(d.formType==='moderationAction')moderationAction_(ss,d);else if(d.formType==='transporterDecision')transporterDecision_(ss,d);else if(d.formType==='gSetCost')gSetCost_(ss,d);else if(d.formType==='gQuoteDecision')gQuoteDecision_(ss,d);else if(d.formType==='gFeedback')gFeedback_(ss,d);else if(d.formType==='g6CreateOrder')g6CreateOrder_(ss,d);else if(d.formType==='g6PaymentDecision')g6PaymentDecision_(ss,d);else if(d.formType==='g6WalletAdjust')g6WalletAdjust_(ss,d);else if(d.formType==='g6RefundRequest')g6RefundRequest_(ss,d);else if(d.formType==='g6RefundDecision')g6RefundDecision_(ss,d);else if(d.formType==='g6GenerateDocuments')g6GenerateDocuments_(ss,d);else if(d.formType==='g6Statement')g6Statement_(ss,d);else throw Error('Unsupported form');if(d.responseMode==='postMessage')return g7PostMessage_(true,d.reference,'');return out_({ok:true,reference:d.reference})}catch(x){console.error(x);try{const d=JSON.parse((e.parameter&&e.parameter.payload)||'{}');if(d.responseMode==='postMessage')return g7PostMessage_(false,'',x.message)}catch(ignore){}return out_({ok:false,error:x.message})}}
+function out_(data, callback) {
+  const json = JSON.stringify(data);
+  const requestedCallback = String(callback || '').trim();
+
+  if (requestedCallback) {
+    // JSONP callbacks are executable JavaScript. Permit only a safe identifier/path.
+    const safeCallback = requestedCallback.replace(/[^A-Za-z0-9_$\.]/g, '');
+
+    if (!safeCallback) {
+      return ContentService
+        .createTextOutput(json)
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService
+      .createTextOutput('/**/' + safeCallback + '(' + json + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  return ContentService
+    .createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  const parameters = e && e.parameter ? e.parameter : {};
+  const action = String(parameters.action || 'health');
+  const callback = String(parameters.callback || '');
+
+  try {
+    if (action === 'adminConsole') {
+      return adminConsole_();
+    }
+
+    if (action === 'health') {
+      return out_({
+        ok: true,
+        service: 'HaulMatch Trust and Moderation',
+        api: 'G7',
+        timestamp: new Date().toISOString()
+      }, callback);
+    }
+
+    if (action === 'marketplace') {
+      return out_({ ok: true, items: marketplace_() }, callback);
+    }
+
+    if (action === 'status') {
+      return out_(status_(parameters.reference, parameters.email), callback);
+    }
+
+    // Legacy and current Admin Cockpit actions are both supported.
+    if (action === 'admin') {
+      return out_(admin_(parameters.key), callback);
+    }
+
+    if (action === 'gAdmin') {
+      return out_(gAdmin_(parameters.key), callback);
+    }
+
+    if (action === 'moderation') {
+      return out_(moderation_(parameters.key), callback);
+    }
+
+    if (action === 'gLeads') {
+      return out_({ ok: true, items: gLeads_() }, callback);
+    }
+
+    if (action === 'gWallet') {
+      return out_(gWallet_(parameters.transporterReference, parameters.email), callback);
+    }
+
+    if (action === 'gUnlock') {
+      return out_(gUnlock_(parameters.reference, parameters.transporterReference, parameters.email), callback);
+    }
+
+    if (action === 'gPro') {
+      return out_(gPro_(parameters.transporterReference, parameters.email), callback);
+    }
+
+    if (action === 'gCustomerQuotes') {
+      return out_(gCustomerQuotes_(parameters.reference, parameters.email), callback);
+    }
+
+    if (action === 'gAppointments') {
+      return out_(gAppointments_(parameters.reference, parameters.email), callback);
+    }
+
+    if (action === 'g6Packs') {
+      return out_({ ok: true, items: g6Packs_() }, callback);
+    }
+
+    if (action === 'g6Wallet') {
+      return out_(g6Wallet_(parameters.transporterReference, parameters.email), callback);
+    }
+
+    if (action === 'g6Documents') {
+      return out_(g6Documents_(parameters.transporterReference, parameters.email), callback);
+    }
+
+    if (action === 'g6Admin') {
+      return out_(g6Admin_(parameters.key), callback);
+    }
+
+    if (action === 'g6Reconcile') {
+      return out_(g6Reconcile_(parameters.key), callback);
+    }
+
+    return out_({ ok: false, error: 'Unknown action: ' + action }, callback);
+  } catch (error) {
+    console.error('doGet failed', action, error);
+    return out_({
+      ok: false,
+      error: error && error.message ? error.message : String(error),
+      action: action
+    }, callback);
+  }
+}
+
+function doPost(e){try{const parameters=e&&e.parameter?e.parameter:{};if(parameters.formType==='apiQuery')return apiQueryPostMessage_(parameters);if(parameters.formType==='adminConsoleForm')return adminConsolePost_(parameters);const d=JSON.parse(parameters.payload||'{}');if(d.formType==='adminQuery')return adminPostMessage_(gAdmin_(d.key));if(!d.formType||!d.reference||d.website)throw Error('Invalid submission');if(['request','transporter'].includes(d.formType)&&!verifyTurnstile_(d.turnstileToken))throw Error('Bot verification failed');const ss=SpreadsheetApp.openById(SHEET_ID);if(d.formType==='request'){d.photoLink=g7SaveUploads_(ss,d.uploads||[],d.reference,d.photoLink||'');delete d.uploads;saveRequest_(ss,d);}else if(d.formType==='transporter')saveTransporter_(ss,d);else if(d.formType==='quote')saveQuote_(ss,d);else if(d.formType==='adminAction')adminAction_(ss,d);else if(d.formType==='moderationAction')moderationAction_(ss,d);else if(d.formType==='transporterDecision')transporterDecision_(ss,d);else if(d.formType==='gSetCost')gSetCost_(ss,d);else if(d.formType==='gQuoteDecision')gQuoteDecision_(ss,d);else if(d.formType==='gFeedback')gFeedback_(ss,d);else if(d.formType==='g6CreateOrder')g6CreateOrder_(ss,d);else if(d.formType==='g6PaymentDecision')g6PaymentDecision_(ss,d);else if(d.formType==='g6WalletAdjust')g6WalletAdjust_(ss,d);else if(d.formType==='g6RefundRequest')g6RefundRequest_(ss,d);else if(d.formType==='g6RefundDecision')g6RefundDecision_(ss,d);else if(d.formType==='g6GenerateDocuments')g6GenerateDocuments_(ss,d);else if(d.formType==='g6Statement')g6Statement_(ss,d);else throw Error('Unsupported form');if(d.responseMode==='postMessage')return g7PostMessage_(true,d.reference,'');return out_({ok:true,reference:d.reference})}catch(x){console.error(x);try{const parameters=e&&e.parameter?e.parameter:{};const d=JSON.parse(parameters.payload||'{}');if(d.formType==='adminQuery')return adminPostMessage_({ok:false,error:x.message});if(d.responseMode==='postMessage')return g7PostMessage_(false,'',x.message)}catch(ignore){}return out_({ok:false,error:x.message})}}
 function verifyTurnstile_(token){if(!TURNSTILE_SECRET)return true;if(!token)return false;const r=UrlFetchApp.fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'post',payload:{secret:TURNSTILE_SECRET,response:token},muteHttpExceptions:true});return JSON.parse(r.getContentText()).success===true}
 function sheet_(ss,n,h){let s=ss.getSheetByName(n);if(!s)s=ss.insertSheet(n);if(s.getLastRow()===0){s.appendRow(h);s.setFrozenRows(1)}else ensureHeaders_(s,h);return s}
 function ensureHeaders_(s,h){const old=s.getRange(1,1,1,s.getLastColumn()).getDisplayValues()[0];h.forEach(x=>{if(!old.includes(x))s.getRange(1,s.getLastColumn()+1).setValue(x)})}
@@ -90,5 +207,295 @@ function upgradeG1ToG6Sheets(){upgradeG1ToG5Sheets();const ss=SpreadsheetApp.ope
 function g7UploadFolder_(){const p=PropertiesService.getScriptProperties(),id=p.getProperty('HAULMATCH_UPLOAD_FOLDER_ID');if(id){try{return DriveApp.getFolderById(id)}catch(e){}}const f=DriveApp.createFolder('HaulMatch 360 Private Uploads');p.setProperty('HAULMATCH_UPLOAD_FOLDER_ID',f.getId());return f}
 function g7SafeName_(name){return String(name||'upload').replace(/[^A-Za-z0-9._ -]/g,'_').slice(0,150)}
 function g7SaveUploads_(ss,uploads,requestRef,existingLink){if(!uploads||!uploads.length)return existingLink||'';if(uploads.length>9)throw Error('Maximum 8 photos and 1 PDF allowed');const folder=g7UploadFolder_(),index=sheet_(ss,'Request Uploads',['Timestamp','Upload Reference','Request Reference','Kind','Position','Original Name','MIME Type','Bytes','Drive File ID','Drive URL','Status']);const urls=[];uploads.forEach((u,i)=>{const mime=String(u.mimeType||''),kind=String(u.kind||'');if(kind==='LOAD_PHOTO'&&!['image/jpeg','image/png','image/webp'].includes(mime))throw Error('Unsupported image type');if(kind==='PRIVATE_DOCUMENT'&&mime!=='application/pdf')throw Error('Unsupported document type');const bytes=Utilities.base64Decode(String(u.data||''));if(bytes.length>5*1024*1024)throw Error('A selected file exceeds 5 MB');const uploadRef='HMUP-'+Utilities.getUuid().slice(0,10).toUpperCase(),blob=Utilities.newBlob(bytes,mime,requestRef+'_'+uploadRef+'_'+g7SafeName_(u.name)),file=folder.createFile(blob);file.setDescription('HaulMatch '+kind+' for '+requestRef);index.appendRow([new Date(),uploadRef,requestRef,kind,Number(u.position||i+1),g7SafeName_(u.name),mime,bytes.length,file.getId(),file.getUrl(),'STORED']);if(kind==='LOAD_PHOTO')urls.push(file.getUrl())});audit_(ss,'REQUEST_UPLOADS_STORED',requestRef,String(uploads.length));return [existingLink||'',...urls].filter(Boolean).join(', ')}
-function g7PostMessage_(ok,reference,error){const data=JSON.stringify({source:'HAULMATCH_UPLOAD',ok:ok,reference:reference||'',error:error||''}).replace(/</g,'\\u003c');return HtmlService.createHtmlOutput('<!doctype html><meta charset="utf-8"><script>parent.postMessage('+data+',"*");<\\/script>')}
+function g7PostMessage_(ok, reference, error) {
+  const data = JSON.stringify({
+    source: 'HAULMATCH_UPLOAD',
+    ok: ok,
+    reference: reference || '',
+    error: error || ''
+  }).replace(/</g, '\\u003c');
+
+  return HtmlService
+    .createHtmlOutput(
+      '<!doctype html>' +
+      '<html><head><meta charset="utf-8"></head><body>' +
+      '<script>' +
+      'window.parent.postMessage(' + data + ', "*");' +
+      '<\/script>' +
+      '</body></html>'
+    )
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
 function upgradeG7Sheets(){upgradeG1ToG6Sheets();const ss=SpreadsheetApp.openById(SHEET_ID);sheet_(ss,'Request Uploads',['Timestamp','Upload Reference','Request Reference','Kind','Position','Original Name','MIME Type','Bytes','Drive File ID','Drive URL','Status']);g7UploadFolder_()}
+
+function setupG7Only() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+
+  sheet_(ss, 'Request Uploads', [
+    'Timestamp',
+    'Upload Reference',
+    'Request Reference',
+    'Kind',
+    'Position',
+    'Original Name',
+    'MIME Type',
+    'Bytes',
+    'Drive File ID',
+    'Drive URL',
+    'Status'
+  ]);
+
+  const folder = g7UploadFolder_();
+
+  console.log('Request Uploads ready');
+  console.log('Upload folder ID: ' + folder.getId());
+}
+
+
+// ADMIN IFRAME RESPONSE - avoids Google JSONP/account-routing failures.
+function adminPostMessage_(payload) {
+  const message = {
+    source: 'HAULMATCH_ADMIN',
+    payload: payload || {
+      ok: false,
+      error: 'Empty Admin response'
+    }
+  };
+
+  // Escape HTML-sensitive characters before embedding JSON in a script block.
+  const safePayload = JSON.stringify(message)
+    .replace(/</g, '\u003c')
+    .replace(/>/g, '\u003e')
+    .replace(/&/g, '\u0026');
+
+  // Split the closing script tag so the server-side source cannot produce
+  // an escaped <\/script> tag that the iframe browser fails to execute.
+  const html =
+    '<!doctype html>' +
+    '<html><head><meta charset="utf-8"></head><body>' +
+    '<script>' +
+    'window.parent.postMessage(' + safePayload + ', "*");' +
+    '</scr' + 'ipt>' +
+    '</body></html>';
+
+  return HtmlService
+    .createHtmlOutput(html)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+
+// SECURE SAME-ORIGIN APPS SCRIPT ADMIN CONSOLE
+function adminConsole_() {
+  return adminConsoleRender_({ key: '', message: '', error: '', data: null });
+}
+
+function adminConsolePost_(parameters) {
+  const key = String(parameters.adminKey || '');
+  const action = String(parameters.consoleAction || 'LOAD');
+  const reference = String(parameters.reference || '');
+  const cost = Number(parameters.cost || 0);
+
+  try {
+    checkAdmin_(key);
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let message = 'Operations loaded.';
+
+    if (action === 'PUBLISHED' || action === 'CLOSED') {
+      adminAction_(ss, {
+        key: key,
+        reference: reference,
+        status: action
+      });
+      message = reference + ' updated to ' + action + '.';
+    } else if (action === 'COST') {
+      gSetCost_(ss, {
+        key: key,
+        reference: reference,
+        cost: cost
+      });
+      message = reference + ' lead cost updated to ' + cost + ' credits.';
+    } else if (action !== 'LOAD') {
+      throw new Error('Unsupported Admin action');
+    }
+
+    return adminConsoleRender_({
+      key: key,
+      message: message,
+      error: '',
+      data: gAdmin_(key)
+    });
+  } catch (error) {
+    return adminConsoleRender_({
+      key: key,
+      message: '',
+      error: error && error.message ? error.message : String(error),
+      data: null
+    });
+  }
+}
+
+function adminConsoleRender_(model) {
+  const webAppUrl = ScriptApp.getService().getUrl();
+  const key = String(model.key || '');
+  const data = model.data;
+  const message = String(model.message || '');
+  const error = String(model.error || '');
+  const escape = adminHtmlEscape_;
+
+  let content = '';
+
+  if (data && data.ok) {
+    const metrics = [
+      ['Published', data.published],
+      ['Unlocks', data.unlocks],
+      ['Quotes', data.quotes],
+      ['Appointments', data.appointments],
+      ['Open issues', data.issues]
+    ];
+
+    const metricHtml = metrics.map(function(item) {
+      return '<div class="kpi"><strong>' + escape(item[1]) + '</strong>' + escape(item[0]) + '</div>';
+    }).join('');
+
+    const requests = data.requests || [];
+    const requestHtml = requests.length ? requests.map(function(row) {
+      const ref = escape(row.reference);
+      return '<article class="row">' +
+        '<div><b>' + ref + ' · ' + escape(row.transportType) + '</b>' +
+        '<p>' + escape(row.collection) + ' → ' + escape(row.delivery) + '</p>' +
+        '<span class="status">' + escape(row.status) + ' · ' + escape(row.cost) + ' credits · ' + escape(row.responses) + '/6 responses</span></div>' +
+        '<div class="actions">' +
+          adminActionForm_(key, ref, 'PUBLISHED', 'Publish', 'primary') +
+          adminCostForm_(key, ref, row.cost) +
+          adminActionForm_(key, ref, 'CLOSED', 'Close', 'danger') +
+        '</div>' +
+      '</article>';
+    }).join('') : '<div class="box">No open requests.</div>';
+
+    content = '<div class="kpis">' + metricHtml + '</div><h2>Lead control</h2>' + requestHtml;
+  }
+
+  const html = '<!doctype html>' +
+  '<html><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
+  '<title>HaulMatch 360 Admin</title><style>' +
+  ':root{--navy:#071827;--panel:#102f49;--cyan:#22d3ee;--lime:#b7f52f;--text:#edf6ff;--muted:#a8bfd0}' +
+  '*{box-sizing:border-box}body{margin:0;background:var(--navy);color:var(--text);font:15px Arial,sans-serif}.top{background:#ffc857;color:#172000;text-align:center;padding:11px;font-weight:900}.wrap{max-width:1180px;margin:auto;padding:38px 5%}h1{font-size:clamp(38px,7vw,70px);margin:8px 0 30px}.eyebrow{color:var(--cyan);font-weight:900;letter-spacing:2px}.box,.row,.kpi{background:var(--panel);border:1px solid #ffffff18;border-radius:16px;padding:18px}.login{display:grid;grid-template-columns:1fr auto;gap:12px;margin-bottom:18px}input{width:100%;padding:14px;border-radius:10px;border:1px solid #436078;background:#071d2e;color:#fff}button{border:0;border-radius:11px;padding:13px 17px;font-weight:900;cursor:pointer}.primary{background:var(--lime);color:#172000}.secondary{background:#19486c;color:#fff}.danger{background:#6b2530;color:#fff}.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0}.kpi strong{display:block;font-size:29px}.row{display:grid;grid-template-columns:1fr auto;gap:18px;margin:12px 0}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.actions form{margin:0}.cost-form{display:flex;gap:6px}.cost-form input{width:72px;padding:10px}.status{color:var(--muted)}.error{color:#ffadb4;margin:12px 0}.success{color:#bff5cc;margin:12px 0}@media(max-width:800px){.login,.row{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}' +
+  '</style></head><body><div class="top">SECURE HAULMATCH ADMIN CONSOLE</div><main class="wrap">' +
+  '<div class="eyebrow">G7 OPERATIONS</div><h1>Admin Cockpit</h1>' +
+  '<form class="box login" method="post" action="' + escape(webAppUrl) + '"><input type="hidden" name="formType" value="adminConsoleForm"><input type="hidden" name="consoleAction" value="LOAD">' +
+  '<input name="adminKey" type="password" placeholder="Admin key" value="' + escape(key) + '" autocomplete="current-password" required>' +
+  '<button class="primary" type="submit">Load Operations</button></form>' +
+  (message ? '<div class="success">' + escape(message) + '</div>' : '') +
+  (error ? '<div class="error">' + escape(error) + '</div>' : '') +
+  content + '</main></body></html>';
+
+  return HtmlService.createHtmlOutput(html).setTitle('HaulMatch 360 Admin');
+}
+
+function adminActionForm_(key, reference, action, label, cssClass) {
+  const webAppUrl = ScriptApp.getService().getUrl();
+  return '<form method="post" action="' + adminHtmlEscape_(webAppUrl) + '">' +
+    '<input type="hidden" name="formType" value="adminConsoleForm">' +
+    '<input type="hidden" name="adminKey" value="' + adminHtmlEscape_(key) + '">' +
+    '<input type="hidden" name="reference" value="' + adminHtmlEscape_(reference) + '">' +
+    '<input type="hidden" name="consoleAction" value="' + adminHtmlEscape_(action) + '">' +
+    '<button class="' + adminHtmlEscape_(cssClass) + '" type="submit">' + adminHtmlEscape_(label) + '</button>' +
+  '</form>';
+}
+
+function adminCostForm_(key, reference, currentCost) {
+  const webAppUrl = ScriptApp.getService().getUrl();
+  return '<form class="cost-form" method="post" action="' + adminHtmlEscape_(webAppUrl) + '">' +
+    '<input type="hidden" name="formType" value="adminConsoleForm">' +
+    '<input type="hidden" name="adminKey" value="' + adminHtmlEscape_(key) + '">' +
+    '<input type="hidden" name="reference" value="' + adminHtmlEscape_(reference) + '">' +
+    '<input type="hidden" name="consoleAction" value="COST">' +
+    '<input name="cost" type="number" min="1" max="5" value="' + adminHtmlEscape_(currentCost || 2) + '" required>' +
+    '<button class="secondary" type="submit">Set Cost</button>' +
+  '</form>';
+}
+
+function adminHtmlEscape_(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+
+// GENERIC PUBLIC IFRAME API
+// Replaces JSONP for the GitHub Pages frontend and avoids Google account routing.
+function apiQueryPostMessage_(parameters) {
+  const requestId = String(parameters.requestId || '');
+  const action = String(parameters.apiAction || '');
+  let result;
+
+  try {
+    if (action === 'gLeads') {
+      result = { ok: true, items: gLeads_() };
+    } else if (action === 'gWallet') {
+      result = gWallet_(parameters.transporterReference, parameters.email);
+    } else if (action === 'gUnlock') {
+      result = gUnlock_(parameters.reference, parameters.transporterReference, parameters.email);
+    } else if (action === 'gPro') {
+      result = gPro_(parameters.transporterReference, parameters.email);
+    } else if (action === 'gCustomerQuotes') {
+      result = gCustomerQuotes_(parameters.reference, parameters.email);
+    } else if (action === 'gAppointments') {
+      result = gAppointments_(parameters.reference, parameters.email);
+    } else if (action === 'g6Packs') {
+      result = { ok: true, items: g6Packs_() };
+    } else if (action === 'g6Wallet') {
+      result = g6Wallet_(parameters.transporterReference, parameters.email);
+    } else if (action === 'g6Documents') {
+      result = g6Documents_(parameters.transporterReference, parameters.email);
+    } else {
+      result = { ok: false, error: 'Unsupported API action: ' + action };
+    }
+  } catch (error) {
+    result = {
+      ok: false,
+      error: error && error.message ? error.message : String(error)
+    };
+  }
+
+  return apiPostMessage_(requestId, result);
+}
+
+function apiPostMessage_(requestId, payload) {
+  const message = {
+    source: 'HAULMATCH_API',
+    requestId: String(requestId || ''),
+    payload: payload || {
+      ok: false,
+      error: 'Empty API response'
+    }
+  };
+
+  const safePayload = JSON.stringify(message)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+
+  const html =
+    '<!doctype html>' +
+    '<html>' +
+    '<head><meta charset="utf-8"></head>' +
+    '<body>' +
+    '<script>' +
+    'window.parent.postMessage(' + safePayload + ', "*");' +
+    'if (window.top !== window.parent) {' +
+    '  window.top.postMessage(' + safePayload + ', "*");' +
+    '}' +
+    '</scr' + 'ipt>' +
+    '</body>' +
+    '</html>';
+
+  return HtmlService
+    .createHtmlOutput(html)
+    .setXFrameOptionsMode(
+      HtmlService.XFrameOptionsMode.ALLOWALL
+    );
+}
