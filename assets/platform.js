@@ -15,9 +15,29 @@ function jp(parameters,callback){
   const timer=setTimeout(()=>{if(hmApiPending.has(requestId)){hmApiPending.delete(requestId);callback({ok:false,error:'The HaulMatch backend did not answer in time.'})}},30000);
   hmApiPending.set(requestId,{callback:callback,timer:timer});
   form.submit();setTimeout(()=>form.remove(),1200);
-}function post(payload,after){const f=document.createElement('form');f.method='POST';f.action=C.appsScriptUrl;f.target='hmframe';f.style.display='none';const i=document.createElement('input');i.name='payload';i.value=JSON.stringify(payload);f.appendChild(i);document.body.appendChild(f);f.submit();setTimeout(()=>{f.remove();after?.()},1300)}function menu(){Q('hamb')?.addEventListener('click',()=>Q('links').classList.toggle('open'))}function auth(){return {transporterReference:(localStorage.hmTrRef||''),email:(localStorage.hmTrEmail||'')}}function savePro(){localStorage.hmTrRef=Q('trRef').value.trim().toUpperCase();localStorage.hmTrEmail=Q('trEmail').value.trim().toLowerCase()}function leadPhoto(a){const src=String(a.photoLink||'').trim();if(!src)return '<div class="lead-photo-placeholder"><span>LOAD PHOTO</span></div>';return '<div class="lead-photo"><img src="'+esc(src)+'" alt="Load photo for '+esc(a.transportType||'transport lead')+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML=\'<div class=&quot;lead-photo-placeholder&quot;><span>PHOTO UNAVAILABLE</span></div>\'"></div>'}
+}function post(payload,after){const f=document.createElement('form');f.method='POST';f.action=C.appsScriptUrl;f.target='hmframe';f.style.display='none';const i=document.createElement('input');i.name='payload';i.value=JSON.stringify(payload);f.appendChild(i);document.body.appendChild(f);f.submit();setTimeout(()=>{f.remove();after?.()},1300)}function menu(){Q('hamb')?.addEventListener('click',()=>Q('links').classList.toggle('open'))}function auth(){return {transporterReference:(localStorage.hmTrRef||''),email:(localStorage.hmTrEmail||'')}}function savePro(){localStorage.hmTrRef=Q('trRef').value.trim().toUpperCase();localStorage.hmTrEmail=Q('trEmail').value.trim().toLowerCase()}function leadPhoto(a){
+  const raw=String(a.photoLink||'').trim();
+  if(!raw)return '<div class="lead-photo-placeholder"><span>PHOTO UNAVAILABLE</span></div>';
+  const match=raw.match(/(?:\/d\/|id=|googleusercontent\.com\/d\/)([-_A-Za-z0-9]{20,})/);
+  const id=match?match[1]:'';
+  const candidates=id?[
+    'https://drive.google.com/thumbnail?id='+id+'&sz=w1200',
+    'https://lh3.googleusercontent.com/d/'+id+'=w1200',
+    'https://drive.google.com/uc?export=view&id='+id
+  ]:[raw];
+  const encoded=encodeURIComponent(JSON.stringify(candidates));
+  return '<div class="lead-photo"><img src="'+esc(candidates[0])+'" data-photo-candidates="'+encoded+'" data-photo-index="0" alt="Load photo for '+esc(a.transportType||'transport lead')+'" loading="eager" onerror="hmPhotoFallback(this)"></div>';
+}
+function hmPhotoFallback(image){
+  let candidates=[];
+  try{candidates=JSON.parse(decodeURIComponent(image.dataset.photoCandidates||''))}catch(error){}
+  const next=Number(image.dataset.photoIndex||0)+1;
+  if(next<candidates.length){image.dataset.photoIndex=String(next);image.src=candidates[next];return}
+  image.onerror=null;
+  image.parentElement.innerHTML='<div class="lead-photo-placeholder"><span>PHOTO UNAVAILABLE</span></div>';
+}
 function leadCard(a){return `<article class="leadcard leadcard-photo">${leadPhoto(a)}<div class="leadcard-body"><div class="leadtop"><div><span class="status">${esc(a.transportType)}</span><h2>${esc(a.description)}</h2></div><span class="credit">${a.leadCost} credits</span></div><h3>${esc(a.collection)} → ${esc(a.delivery)}</h3><div class="tags"><span class="tag">${esc(a.requiredDate)}</span><span class="tag">${esc(a.mass||'Mass not supplied')}</span><span class="tag">${esc(a.quantity||'Quantity not supplied')}</span></div><p>${esc(a.specialHandling||'No special handling supplied')}</p><div class="private">Private customer details locked · Responses ${a.responseCount}/${a.responseLimit}</div><button class="btn secondary" onclick="pickLead('${esc(a.reference)}')">Unlock Lead</button> <a class="btn ghost" href="../submit-quote/?request=${encodeURIComponent(a.reference)}">Quote</a></div></article>`}
-function loadLeadsFromAppsScript(){if(!Q('leadList'))return;Q('leadList').innerHTML='<p class="loading">Loading approved leads...</p>';jp({action:'gLeads'},d=>{if(!d.ok){Q('leadList').innerHTML='<p class="error">'+esc(d.error)+'</p>';return}window.hmLeads=d.items||[];drawLeads()})}function drawLeads(){const term=(Q('search')?.value||'').toLowerCase(),cat=Q('category')?.value||'',rows=(window.hmLeads||[]).filter(x=>(!term||JSON.stringify(x).toLowerCase().includes(term))&&(!cat||x.transportType===cat));Q('leadList').innerHTML=rows.length?rows.map(leadCard).join(''):'<div class="notice">No approved leads match these filters.</div>';if(Q('cnt'))Q('cnt').textContent=rows.length+' live leads'}function pickLead(reference){
+function loadLeads(){if(!Q('leadList'))return;Q('leadList').innerHTML='<p class="loading">Loading approved leads...</p>';jp({action:'gLeads'},d=>{if(!d.ok){Q('leadList').innerHTML='<p class="error">'+esc(d.error)+'</p>';return}window.hmLeads=d.items||[];drawLeads()})}function drawLeads(){const term=(Q('search')?.value||'').toLowerCase(),cat=Q('category')?.value||'',rows=(window.hmLeads||[]).filter(x=>(!term||JSON.stringify(x).toLowerCase().includes(term))&&(!cat||x.transportType===cat));Q('leadList').innerHTML=rows.length?rows.map(leadCard).join(''):'<div class="notice">No approved leads match these filters.</div>';if(Q('cnt'))Q('cnt').textContent=rows.length+' live leads'}function pickLead(reference){
   const ref=String(reference||'').trim().toUpperCase();
   if(!ref)return;
   const leadInput=Q('leadRef');
@@ -87,7 +107,7 @@ function ensureLeadPhotoStyles(){if(document.getElementById('hmLeadPhotoStyles')
 /* Neon Data API + Neon Auth production test integration */
 function hmNeonReady(){return window.HMNEON&&window.HMNEON.state&&window.HMNEON.state.ready}
 function hmNeonWait(task){if(hmNeonReady())return task();const once=()=>{window.removeEventListener('hm:neon-ready',once);task()};window.addEventListener('hm:neon-ready',once,{once:true})}
-async function loadLeads(){if(String(C.dataMode||'APPS_SCRIPT').toUpperCase()!=='NEON'){return loadLeadsFromAppsScript()}if(!Q('leadList'))return;Q('leadList').innerHTML='<p class="loading">Loading approved leads from Neon...</p>';hmNeonWait(async()=>{try{window.hmLeads=await HMNEON.publicLeads();drawLeads()}catch(error){Q('leadList').innerHTML='<p class="error">'+esc(HMNEON.friendly(error))+'</p>';if(Q('cnt'))Q('cnt').textContent='0 live leads'}})}
+async function loadLeads(){if(!Q('leadList'))return;Q('leadList').innerHTML='<p class="loading">Loading approved leads from Neon...</p>';hmNeonWait(async()=>{try{window.hmLeads=await HMNEON.publicLeads();drawLeads()}catch(error){Q('leadList').innerHTML='<p class="error">'+esc(HMNEON.friendly(error))+'</p>';if(Q('cnt'))Q('cnt').textContent='0 live leads'}})}
 function hmAuthBox(){return Q('neonAuthResult')||Q('unlockResult')}
 async function neonSignIn(){const email=Q('neonEmail')?.value.trim().toLowerCase(),password=Q('neonPassword')?.value||'',box=hmAuthBox();if(!email||!password){if(box)box.innerHTML='<p class="error">Enter the Neon transporter email and password.</p>';return}if(box)box.innerHTML='<p class="loading">Signing in securely...</p>';try{const user=await HMNEON.signIn(email,password);if(box)box.innerHTML='<div class="notice success">Signed in as <b>'+esc(user.email||email)+'</b>.</div>';await wallet();hmRenderAuthState()}catch(error){if(box)box.innerHTML='<p class="error">'+esc(HMNEON.friendly(error))+'</p>'}}
 async function neonSignOut(){await HMNEON.signOut();localStorage.removeItem('hmCredits');hmRenderAuthState();if(Q('walletResult'))Q('walletResult').innerHTML=''}
