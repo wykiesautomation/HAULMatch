@@ -6,3 +6,10 @@ window.HAULMATCH_CONFIG={
   neonDatabaseUrl:"https://ep-fancy-union-b1hu0o27.c-5.eu-central-1.aws.neon.tech/neondb",
   neonDataApiUrl:"https://ep-fancy-union-b1hu0o27.apirest.c-5.eu-central-1.aws.neon.tech/neondb/rest/v1"
 };
+window.HAULMATCH_CONFIG = window.HAULMATCH_CONFIG || {};
+
+window.HAULMATCH_CONFIG.GOOGLE_CLIENT_ID =
+  'PLAK_JOU_GOOGLE_WEB_CLIENT_ID_HIER';
+
+window.HAULMATCH_CONFIG.APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbwqlzBjVYWyk7LQVczAEt9Oa2v6MnMQ-LbbtZuqPmJ6sjjqIEracGHbOkDRBFoaweWo/exec';
