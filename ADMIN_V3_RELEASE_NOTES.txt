@@ -1,0 +1,31 @@
+HAULMATCH 360 - COMPLETE GOOGLE ADMIN V3
+
+BUSINESS MODEL
+- Customers post transport requests and photos.
+- Approved transporters buy credits.
+- Credits unlock customer contact details and complete request information.
+- HaulMatch records only its own credit sales, payments, wallet movements and lead unlocks.
+- Transport pricing and payment arrangements after contact exchange are outside the HaulMatch finance ledger.
+
+ADMIN MODULES
+- Overview and permanent Home / Sign Out navigation.
+- Requests with status-aware Publish, Unpublish, Close, Reopen and Set Cost.
+- Transporter approval, More Info, Reject, Block and wallet balance.
+- Credits & Payments with payment orders and wallet ledger.
+- Lead Unlock register and Technical Unlock Reversal.
+- Tax Export for Credit Sales, Wallet Ledger and Finance Document Register CSV files.
+- Audit Log.
+- Google Admin Users management through HAULMATCH_ADMIN_EMAILS.
+
+REMOVED FROM THE MAIN ADMIN FLOW
+- General transport-job payments.
+- General transport refunds.
+- Public refund administration.
+- Old Admin Key UI as the normal entry point.
+
+INSTALL
+1. Deploy this full ZIP to GitHub root.
+2. Replace the only Apps Script Code.gs with google-apps-script/Code.gs from this pack.
+3. Save and deploy the existing Web App as New version.
+4. Keep the same /exec URL.
+5. Open https://haulmatch.wykiesautomation.co.za/admin/ and sign in with an authorized Google account.
