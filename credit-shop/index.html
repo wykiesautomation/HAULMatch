@@ -89,9 +89,7 @@
         <label>Approved email address
           <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
         </label>
-        <button class="checkout-btn" id="checkoutButton" type="submit" disabled>Create Credit Order</button>
-        <button class="sandbox-btn" id="sandboxButton" type="button" disabled>Test with PayFast Sandbox</button>
-        <p class="sandbox-note">Sandbox test only. No real money is charged and credits are not issued automatically.</p>
+        <button class="checkout-btn" id="checkoutButton" type="submit" disabled>Continue to PayFast</button>
       </form>
       <div id="purchaseMessage" class="purchase-message" aria-live="polite"></div>
     </section>
@@ -115,7 +113,6 @@
   </footer>
 
   <iframe name="hmCreditFrame" id="hmCreditFrame" hidden></iframe>
-  <form id="payfastSandboxForm" action="https://sandbox.payfast.co.za/eng/process" method="post" hidden></form>
   <script src="../assets/config.js"></script>
   <script src="../assets/credit-shop.js?v=20260920-launch"></script>
 </body>
