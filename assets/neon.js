@@ -58,6 +58,25 @@ async function signIn(email,password){
   return state.user;
 }
 
+
+async function signUp(name,email,password){
+  if(!state.client)throw new Error('Neon is not ready.');
+  const {data,error}=await state.client.auth.signUp.email({name:String(name||'').trim(),email:String(email).trim().toLowerCase(),password});
+  if(error)throw error;
+  state.session=data?.session||null;
+  state.user=data?.user||state.session?.user||null;
+  emit('hm:auth-changed',{signedIn:!!state.user,user:state.user});
+  return {user:state.user,session:state.session};
+}
+
+async function signInGoogle(){
+  if(!state.client)throw new Error('Neon is not ready.');
+  const callbackURL=window.location.origin+'/transport-leads/';
+  const {data,error}=await state.client.auth.signIn.social({provider:'google',callbackURL});
+  if(error)throw error;
+  return data;
+}
+
 async function signOut(){
   if(state.client)await state.client.auth.signOut();
   state.session=null;state.user=null;
@@ -92,6 +111,8 @@ window.HMNEON={
   state,
   publicLeads,
   signIn,
+  signUp,
+  signInGoogle,
   signOut,
   ownProfile,
   wallet,
