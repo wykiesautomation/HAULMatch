@@ -1,1 +1,119 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Credit Shop | HaulMatch 360</title><link rel="stylesheet" href="../assets/site.css"></head><body><div class="testbar">G6 SANDBOX TEST MODE · No real payment is processed</div><header class="hmnav"><div class="in"><a class="hmlogo" href="../">HaulMatch <span>360</span></a><nav class="hmlinks"><a href="../transport-leads/">Leads</a><a href="../pro-centre/">Pro Centre</a><a href="../credit-shop/">Buy Credits</a><a href="../wallet-statement/">Wallet</a><a href="../finance-documents/">Documents</a></nav></div></header><main><section class="pageHero"><div class="wrap"><div class="eyebrow">G6 sandbox commerce</div><h1>Credit Shop</h1><p>Choose a server-defined credit pack. In free-test mode, admin simulates a validated payment before credits are issued.</p></div></section><section class="content"><div class="formbox"><div class="formgrid"><div class="field"><label>Approved transporter reference</label><input id="financeRef" placeholder="HMTRN-..."></div><div class="field"><label>Application email</label><input id="financeEmail" type="email"></div></div></div><div class="sandbox"><b>SANDBOX / TEST</b><br>No bank card or real money is processed by this GitHub test flow.</div><div id="packList" class="packGrid"></div><div id="orderResult"></div></section></main><footer class="hmfooter"><div class="in"><div><b>HaulMatch 360 G6</b><br>Sandbox commerce and finance testing.</div><div><a href="../finance-admin/">Finance Admin</a> · <a href="../refund-request/">Refund Request</a></div></div></footer><iframe name="hmframe" style="display:none"></iframe><script src="../assets/config.js"></script><script src="../assets/finance.js"></script></body></html>
+<!doctype html>
+<html lang="en-ZA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Buy HaulMatch 360 credits to unlock suitable South African transport leads. No monthly subscription.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#071827">
+  <title>Buy Transport Lead Credits | HaulMatch 360</title>
+  <link rel="stylesheet" href="../assets/site.css?v=20260920-credit-shop">
+  <link rel="stylesheet" href="../assets/credit-shop.css?v=20260920-launch">
+</head>
+<body class="credit-shop-page">
+  <header class="credit-nav">
+    <a class="credit-logo" href="../">HaulMatch <span>360</span></a>
+    <nav>
+      <a href="../transport-leads/">Transport Leads</a>
+      <a href="../pro-centre/">Pro Centre</a>
+      <a href="../how-it-works/">How It Works</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="credit-hero">
+      <div class="eyebrow">NO MONTHLY SUBSCRIPTION</div>
+      <h1>Buy credits. Unlock the loads that fit your business.</h1>
+      <p>Browse transport opportunities first, then use credits only when a suitable lead is worth contacting.</p>
+      <div class="credit-trust">
+        <span>Approved transporters only</span>
+        <span>Secure PayFast checkout</span>
+        <span>Immediate wallet credit after verified payment</span>
+      </div>
+    </section>
+
+    <section class="pack-grid" aria-label="HaulMatch credit packages">
+      <article class="pack-card">
+        <div class="pack-label">STARTER</div>
+        <h2>10 Credits</h2>
+        <div class="pack-price"><span>R</span>299</div>
+        <p>Perfect for trying HaulMatch without a subscription.</p>
+        <ul>
+          <li>Unlock up to 5 standard leads</li>
+          <li>R29.90 per credit</li>
+          <li>No expiry during launch</li>
+        </ul>
+        <button class="buy-btn" data-pack="STARTER">Buy Starter</button>
+      </article>
+
+      <article class="pack-card featured">
+        <div class="popular">MOST POPULAR</div>
+        <div class="pack-label">GROWTH</div>
+        <h2>25 Credits</h2>
+        <div class="pack-price"><span>R</span>649</div>
+        <p>For active transporters checking new opportunities regularly.</p>
+        <ul>
+          <li>Unlock up to 12 standard leads</li>
+          <li>1 credit remains</li>
+          <li>R25.96 per credit</li>
+        </ul>
+        <button class="buy-btn primary" data-pack="GROWTH">Buy Growth</button>
+      </article>
+
+      <article class="pack-card">
+        <div class="value">BEST VALUE</div>
+        <div class="pack-label">FLEET</div>
+        <h2>50 Credits</h2>
+        <div class="pack-price"><span>R</span>1 099</div>
+        <p>For established operators and transport fleets.</p>
+        <ul>
+          <li>Unlock up to 25 standard leads</li>
+          <li>R21.98 per credit</li>
+          <li>Best launch value</li>
+        </ul>
+        <button class="buy-btn" data-pack="FLEET">Buy Fleet</button>
+      </article>
+    </section>
+
+    <section class="purchase-panel" id="purchasePanel">
+      <div>
+        <div class="eyebrow">APPROVED TRANSPORTER</div>
+        <h2>Complete your credit purchase</h2>
+        <p id="selectedPack">Select a package above.</p>
+      </div>
+      <form id="purchaseForm" target="hmCreditFrame" method="post">
+        <input type="hidden" name="payload" id="payload">
+        <label>Transporter reference
+          <input id="transporterReference" autocomplete="off" placeholder="HMTRN-..." required>
+        </label>
+        <label>Approved email address
+          <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
+        </label>
+        <button class="checkout-btn" id="checkoutButton" type="submit" disabled>Continue to PayFast</button>
+      </form>
+      <div id="purchaseMessage" class="purchase-message" aria-live="polite"></div>
+    </section>
+
+    <section class="credit-info">
+      <div><strong>2 credits</strong><span>Standard vehicle, tractor or farm implement lead</span></div>
+      <div><strong>3 credits</strong><span>Large machinery lead</span></div>
+      <div><strong>4 to 5 credits</strong><span>Specialist, abnormal or premium opportunity</span></div>
+    </section>
+
+    <section class="credit-note">
+      <h2>What credits pay for</h2>
+      <p>Credits unlock the customer contact details and complete transport request. After contact details are exchanged, the customer and transporter arrange the transport directly.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a href="../">Home</a>
+    <a href="../transport-leads/">Transport Leads</a>
+    <a href="../trust-safety/">Trust &amp; Safety</a>
+  </footer>
+
+  <iframe name="hmCreditFrame" id="hmCreditFrame" hidden></iframe>
+  <script src="../assets/config.js"></script>
+  <script src="../assets/credit-shop.js?v=20260920-launch"></script>
+</body>
+</html>
