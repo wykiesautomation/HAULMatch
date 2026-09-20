@@ -28,7 +28,6 @@
 /* Live Auth onboarding */
 .auth-tabs{display:flex;gap:8px;margin:15px 0}.auth-tab{border:1px solid #2e5a75;background:#071d2e;color:#c7d7e4;border-radius:10px;padding:10px 16px;font-weight:800;cursor:pointer}.auth-tab.active{background:#22d3ee;color:#04141f;border-color:#22d3ee}.google-btn{background:#fff;color:#202124;border:1px solid #dadce0}.google-btn:hover{background:#f7f8f8}.auth-actions{align-items:center}.hidden{display:none!important}@media(max-width:600px){.auth-actions{display:grid}.auth-actions .btn{width:100%;text-align:center}}
 
-
 /* HAULMATCH PHOTO TOP CARD START */
 /* One clean full-width card: photo on top, all lead details below. */
 #leadList,
