@@ -22,7 +22,7 @@
 
   <main>
     <section class="credit-hero">
-      <div class="eyebrow">NO MONTHLY SUBSCRIPTION</div>
+      <div class="eyebrow">NO MONTHLY SUBSCRIPTION</div><div id="modeBadge" class="mode-badge">PAYMENT MODE</div>
       <h1>Buy credits. Unlock the loads that fit your business.</h1>
       <p>Browse transport opportunities first, then use credits only when a suitable lead is worth contacting.</p>
       <div class="credit-trust">
@@ -83,15 +83,14 @@
       </div>
       <form id="purchaseForm" target="hmCreditFrame" method="post">
         <input type="hidden" name="payload" id="payload">
-        <label>Transporter reference
-          <input id="transporterReference" autocomplete="off" placeholder="HMTRN-..." required>
-        </label>
-        <label>Approved email address
+        <label>Transporter email
           <input id="email" type="email" autocomplete="email" placeholder="name@example.com" required>
         </label>
-        <button class="checkout-btn" id="checkoutButton" type="submit" disabled>Create Credit Order</button>
-        <button class="sandbox-btn" id="sandboxButton" type="button" disabled>Test with PayFast Sandbox</button>
-        <p class="sandbox-note">Sandbox test only. No real money is charged and credits are not issued automatically.</p>
+        <label>Password
+          <input id="password" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="sandbox-btn" id="loginButton" type="button">Sign in securely</button>
+        <button class="checkout-btn" id="checkoutButton" type="submit" disabled>Continue to PayFast</button>
       </form>
       <div id="purchaseMessage" class="purchase-message" aria-live="polite"></div>
     </section>
@@ -115,7 +114,7 @@
   </footer>
 
   <iframe name="hmCreditFrame" id="hmCreditFrame" hidden></iframe>
-  <form id="payfastSandboxForm" action="https://sandbox.payfast.co.za/eng/process" method="post" hidden></form>
+  <form id="payfastForm" method="post" hidden></form>
   <script src="../assets/config.js"></script>
   <script src="../assets/credit-shop.js?v=20260920-launch"></script>
 </body>

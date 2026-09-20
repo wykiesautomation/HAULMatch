@@ -11,7 +11,7 @@ from .database import Base,engine,db,SessionLocal
 from .models import Account,Lead,Quote,Audit,CreditPack,PaymentOrder,PaymentNotification,WalletTransaction,LeadUnlock,ContactReveal,Dispute,Receipt,Vehicle,Driver,Job,JobEvent,Incident,Evidence,POD,Rating,BackupVerification
 from .security import hash_password,verify_password,normalise_email,normalise_phone,token,current,roles
 from .storage import save
-from .payfast import configured as payfast_configured,checkout_url,checkout_fields,validate_itn
+from .payfast import configured as payfast_configured,checkout_url,checkout_fields,validate_itn,confirm_with_payfast,mode as payfast_mode
 from .commerce import post_ledger,audit
 from .operations import validate_assignment,next_state
 errors=settings.validate()
@@ -24,8 +24,10 @@ app.mount('/assets',StaticFiles(directory=site/'assets'),name='assets')
 def startup():
  Base.metadata.create_all(engine)
  s=SessionLocal()
- for code,name,credits,cents,order in [('STARTER','Starter',10,30000,1),('GROWTH','Growth',25,67500,2),('FLEET','Fleet',50,120000,3)]:
-  if not s.query(CreditPack).filter_by(code=code).first():s.add(CreditPack(code=code,name=name,credits=credits,price_cents=cents,sort_order=order))
+ for code,name,credits,cents,order in [('STARTER','Starter',10,29900,1),('GROWTH','Growth',25,64900,2),('FLEET','Fleet',50,109900,3)]:
+  pack=s.query(CreditPack).filter_by(code=code).first()
+  if not pack: pack=CreditPack(code=code);s.add(pack)
+  pack.name=name;pack.credits=credits;pack.price_cents=cents;pack.sort_order=order;pack.active=True
  s.commit();s.close()
 @app.middleware('http')
 async def headers(request:Request,call_next):
@@ -72,6 +74,9 @@ def quote(reference:str,x:dict,a=Depends(roles('transporter')),s=Depends(db)):
  if s.query(Quote).filter_by(lead_id=lead.id,transporter_id=a.id).first():raise HTTPException(409,'Quote already submitted')
  q=Quote(reference='HMQ-'+uuid4().hex[:10].upper(),lead_id=lead.id,transporter_id=a.id,amount_cents=int(round(float(x.get('amount',0))*100)),vehicle=x.get('vehicle'),terms=x.get('terms'));s.add(q);s.add(Audit(event='QUOTE_SUBMITTED',actor_id=a.id,reference=q.reference,detail=reference));s.commit();return {'reference':q.reference,'status':'SUBMITTED'}
 
+@app.get('/api/payments/payfast/status')
+def payment_status():
+ return {'mode':payfast_mode(),'configured':payfast_configured(),'checkout_enabled':payfast_configured()}
 @app.get('/api/credit-packs')
 def credit_packs(s=Depends(db)):return [{'id':p.id,'code':p.code,'name':p.name,'credits':p.credits,'price_cents':p.price_cents,'currency':'ZAR'} for p in s.query(CreditPack).filter_by(active=True).order_by(CreditPack.sort_order)]
 @app.post('/api/payments/payfast/checkout')
@@ -87,7 +92,9 @@ async def payment_itn(request:Request,s=Depends(db)):
  if s.query(PaymentNotification).filter_by(notification_hash=digest).first():return {'status':'duplicate'}
  order=s.query(PaymentOrder).filter_by(reference=form.get('m_payment_id')).first()
  if not order:s.add(PaymentNotification(notification_hash=digest,valid=False,reason='Unknown reference',payload_json=raw));s.commit();raise HTTPException(400,'Unknown payment')
- valid,reason=validate_itn(form,order);s.add(PaymentNotification(notification_hash=digest,payment_id=order.id,valid=valid,reason=reason,payload_json=raw))
+ valid,reason=validate_itn(form,order)
+ if valid and not await confirm_with_payfast(form):valid,reason=False,'PayFast server confirmation failed'
+ s.add(PaymentNotification(notification_hash=digest,payment_id=order.id,valid=valid,reason=reason,payload_json=raw))
  if not valid:order.status='INVALID';audit(s,'PAYMENT_REJECTED',None,order.reference,reason);s.commit();raise HTTPException(400,reason)
  if not order.credited:
   account=s.get(Account,order.account_id);post_ledger(s,account,order.credits,'credit','PURCHASE_CREDIT','PayFast '+order.reference,payment_id=order.id);order.credited=True;order.status='COMPLETE';order.completed_at=datetime.utcnow();receipt=Receipt(reference='HMR-'+uuid4().hex[:12].upper(),account_id=account.id,payment_id=order.id,description=f'{order.credits} HaulMatch credits',amount_cents=order.amount_cents);s.add(receipt);audit(s,'WALLET_CREDITED',None,order.reference,str(order.credits))
