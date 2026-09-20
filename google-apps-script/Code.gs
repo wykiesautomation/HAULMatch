@@ -161,8 +161,53 @@ function gFeedbackSheet_(ss){return sheet_(ss,'Tester Feedback',['Timestamp','Re
 function gSetting_(ss,ref){const s=gLeadSettings_(ss),r=find_(s,ref,1);if(r)return {s:s,r:r,cost:Number(s.getRange(r,2).getValue()||2),count:Number(s.getRange(r,3).getValue()||0),limit:Number(s.getRange(r,4).getValue()||6)};s.appendRow([ref,2,0,6,new Date()]);return {s:s,r:s.getLastRow(),cost:2,count:0,limit:6}}
 function gEnsureWallet_(ss,ref,email,credits){const s=gWallets_(ss),r=find_(s,ref,1);if(r)return r;s.appendRow([ref,String(email||'').toLowerCase(),credits,credits,new Date()]);return s.getLastRow()}
 function gTransporter_(ss,ref,email){const s=sheet_(ss,'Transporter Applications',TH),r=find_(s,String(ref||'').toUpperCase(),2);if(!r||s.getRange(r,17).getDisplayValue()!=='APPROVED'||s.getRange(r,5).getDisplayValue().toLowerCase()!==String(email||'').toLowerCase())return null;return {row:r,company:s.getRange(r,4).getDisplayValue()||s.getRange(r,3).getDisplayValue()}}
-function gPublicPhoto_(value){const first=String(value||'').split(',')[0].trim();if(!first)return '';const match=first.match(/(?:\/d\/|id=)([-_A-Za-z0-9]{20,})/);if(!match)return '';try{DriveApp.getFileById(match[1]).setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW)}catch(error){console.warn('Public lead photo sharing failed',error)}return 'https://drive.google.com/thumbnail?id='+match[1]+'&sz=w1200'}
-function gLeads_(){const ss=SpreadsheetApp.openById(SHEET_ID),s=sheet_(ss,'Transport Requests',RH),v=s.getDataRange().getDisplayValues();return v.slice(1).filter(r=>r[19]==='PUBLISHED'&&r[23]!=='BLOCKED').map(r=>{const m=gSetting_(ss,r[1]);return {reference:r[1],transportType:r[6],description:r[7],quantity:r[8],mass:r[9],dimensions:r[10],collection:r[11],delivery:r[12],requiredDate:r[13],specialHandling:r[14],photoLink:gPublicPhoto_(r[16]),leadCost:m.cost,responseCount:m.count,responseLimit:m.limit}}).filter(x=>x.responseCount<x.responseLimit)}
+function gPublicPhoto_(value){
+  const first=String(value||'').split(',')[0].trim();
+  if(!first)return '';
+  const match=first.match(/(?:\/d\/|id=)([-_A-Za-z0-9]{20,})/);
+  if(!match)return '';
+  try{
+    const file=DriveApp.getFileById(match[1]);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
+    return 'https://drive.google.com/thumbnail?id='+match[1]+'&sz=w1200';
+  }catch(error){
+    console.warn('Public lead photo sharing failed',error);
+    return '';
+  }
+}
+function gPhotoForRequest_(ss,requestRef,fallback){
+  const direct=gPublicPhoto_(fallback);
+  if(direct)return direct;
+  const uploads=sheet_(ss,'Request Uploads',['Timestamp','Upload Reference','Request Reference','Kind','Position','Original Name','MIME Type','Bytes','Drive File ID','Drive URL','Status']);
+  if(uploads.getLastRow()<2)return '';
+  const rows=uploads.getRange(2,1,uploads.getLastRow()-1,uploads.getLastColumn()).getDisplayValues();
+  const match=rows.filter(function(x){return x[2]===requestRef&&x[3]==='LOAD_PHOTO'&&x[10]==='STORED'&&x[8];}).sort(function(a,b){return Number(a[4]||0)-Number(b[4]||0);})[0];
+  if(!match)return '';
+  try{
+    const file=DriveApp.getFileById(match[8]);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK,DriveApp.Permission.VIEW);
+    return 'https://drive.google.com/thumbnail?id='+match[8]+'&sz=w1200';
+  }catch(error){
+    console.warn('Request Upload photo lookup failed',requestRef,error);
+    return '';
+  }
+}
+function gLeads_(){const ss=SpreadsheetApp.openById(SHEET_ID),s=sheet_(ss,'Transport Requests',RH),v=s.getDataRange().getDisplayValues();return v.slice(1).filter(r=>r[19]==='PUBLISHED'&&r[23]!=='BLOCKED').map(r=>{const m=gSetting_(ss,r[1]);return {reference:r[1],transportType:r[6],description:r[7],quantity:r[8],mass:r[9],dimensions:r[10],collection:r[11],delivery:r[12],requiredDate:r[13],specialHandling:r[14],photoLink:gPhotoForRequest_(ss,r[1],r[16]),leadCost:m.cost,responseCount:m.count,responseLimit:m.limit}}).filter(x=>x.responseCount<x.responseLimit)}
+
+function repairPublishedLeadPhotos(){
+  const ss=SpreadsheetApp.openById(SHEET_ID),requests=sheet_(ss,'Transport Requests',RH);
+  const rows=requests.getDataRange().getDisplayValues();
+  let repaired=0,missing=0;
+  rows.slice(1).forEach(function(r,i){
+    if(r[19]!=='PUBLISHED')return;
+    const photo=gPhotoForRequest_(ss,r[1],r[16]);
+    if(photo){
+      if(!r[16])requests.getRange(i+2,17).setValue(photo);
+      repaired++;
+    }else missing++;
+  });
+  console.log('Published lead photos available: '+repaired+'; missing: '+missing);
+}
 function gWallet_(ref,email){const ss=SpreadsheetApp.openById(SHEET_ID),t=gTransporter_(ss,ref,email);if(!t)return {ok:false,error:'Approved transporter reference and email do not match'};const s=gWallets_(ss),r=gEnsureWallet_(ss,String(ref).toUpperCase(),String(email).toLowerCase(),10);return {ok:true,company:t.company,credits:Number(s.getRange(r,3).getValue()||0)}}
 function gUnlock_(requestRef,trRef,email){const lock=LockService.getScriptLock();lock.waitLock(10000);try{const ss=SpreadsheetApp.openById(SHEET_ID),t=gTransporter_(ss,trRef,email);if(!t)return {ok:false,error:'Approved transporter reference and email do not match'};const rs=sheet_(ss,'Transport Requests',RH),rr=find_(rs,String(requestRef||'').toUpperCase(),2);if(!rr||rs.getRange(rr,20).getDisplayValue()!=='PUBLISHED')return {ok:false,error:'Lead is not open'};const us=gUnlocks_(ss),rows=us.getLastRow()>1?us.getRange(2,3,us.getLastRow()-1,3).getDisplayValues():[],dupe=rows.some(x=>x[0]===requestRef&&x[1]===trRef&&x[2].toLowerCase()===String(email).toLowerCase());const ws=gWallets_(ss),wr=gEnsureWallet_(ss,String(trRef).toUpperCase(),String(email).toLowerCase(),10),m=gSetting_(ss,requestRef);let credits=Number(ws.getRange(wr,3).getValue()||0);if(!dupe){if(m.count>=m.limit)return {ok:false,error:'Lead response limit reached'};if(credits<m.cost)return {ok:false,error:'Insufficient test credits'};credits-=m.cost;ws.getRange(wr,3).setValue(credits);g6Ledger_(ss).appendRow([new Date(),'HML-'+Utilities.getUuid().slice(0,10).toUpperCase(),trRef,'DEBIT',m.cost,credits+m.cost,credits,'LEAD_UNLOCK','Unlock '+requestRef,'','',trRef]);ws.getRange(wr,5).setValue(new Date());m.s.getRange(m.r,3).setValue(m.count+1);m.s.getRange(m.r,5).setValue(new Date());us.appendRow([new Date(),'HMU-'+Utilities.getUuid().slice(0,8).toUpperCase(),requestRef,trRef,String(email).toLowerCase(),m.cost,credits,'UNLOCKED']);audit_(ss,'LEAD_UNLOCKED',requestRef,trRef+' cost='+m.cost)}return {ok:true,customerName:rs.getRange(rr,3).getDisplayValue(),email:rs.getRange(rr,4).getDisplayValue(),mobile:rs.getRange(rr,5).getDisplayValue(),collection:rs.getRange(rr,12).getDisplayValue(),delivery:rs.getRange(rr,13).getDisplayValue(),credits:credits}}finally{lock.releaseLock()}}
 function gPro_(ref,email){const ss=SpreadsheetApp.openById(SHEET_ID),t=gTransporter_(ss,ref,email);if(!t)return {ok:false,error:'Approved transporter reference and email do not match'};const ws=gWallets_(ss),wr=gEnsureWallet_(ss,ref,email,10),u=gUnlocks_(ss),q=sheet_(ss,'Quotes',QH),a=gAppointmentsSheet_(ss);const unlocks=u.getLastRow()>1?u.getRange(2,4,u.getLastRow()-1,1).getDisplayValues().flat().filter(x=>x===ref).length:0,quotes=q.getLastRow()>1?q.getRange(2,4,q.getLastRow()-1,1).getDisplayValues().flat().filter(x=>x===ref).length:0,apps=a.getLastRow()>1?a.getRange(2,5,a.getLastRow()-1,1).getDisplayValues().flat().filter(x=>x===ref).length:0;return {ok:true,company:t.company,credits:Number(ws.getRange(wr,3).getValue()||0),unlocks:unlocks,quotes:quotes,shortlisted:0,appointed:apps}}
