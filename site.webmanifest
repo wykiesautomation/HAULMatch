@@ -1,0 +1,9 @@
+{
+  "name": "HaulMatch 360",
+  "short_name": "HaulMatch",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#061421",
+  "theme_color": "#071525",
+  "description": "South African transport marketplace for vehicles, farm implements, machinery and specialist loads."
+}

@@ -1,3 +1,19 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /admin-free-test/
+Disallow: /finance-admin/
+Disallow: /finance-documents/
+Disallow: /monitoring/
+Disallow: /operations/
+Disallow: /payments/
+Disallow: /refund-request/
+Disallow: /request-status/
+Disallow: /customer-quotes/
+Disallow: /appointments/
+Disallow: /pro-centre/
+Disallow: /submit-quote/
+Disallow: /tester-feedback/
+Disallow: /wallet-statement/
+
 Sitemap: https://haulmatch.wykiesautomation.co.za/sitemap.xml
