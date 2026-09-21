@@ -1,4 +1,4 @@
-HAULMATCH HOME LIVE LEAD FIX
+﻿HAULMATCH HOME LIVE LEAD FIX
 
 FIXED
 - Home and Transport Leads now use the same Apps Script published-lead source as Admin.
@@ -8,7 +8,7 @@ FIXED
 - First uploaded load photo is returned as a public Google Drive thumbnail.
 - Home WOW layout remains unchanged.
 - Main footer Admin link now opens /admin/.
-- Broken Â· characters on Home and Transport Leads were corrected.
+- Broken · characters on Home and Transport Leads were corrected.
 - Asset query strings force browsers to load the corrected JavaScript.
 
 DEPLOY
@@ -16,3 +16,4 @@ DEPLOY
 2. Copy google-apps-script/Code.gs into the only Apps Script Code.gs.
 3. Save and deploy the existing Web App as New version.
 4. Hard refresh Home and Transport Leads.
+

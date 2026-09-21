@@ -1,4 +1,4 @@
-const SHEET_ID=PropertiesService.getScriptProperties().getProperty('HAULMATCH_SHEET_ID');
+﻿const SHEET_ID=PropertiesService.getScriptProperties().getProperty('HAULMATCH_SHEET_ID');
 const ADMIN_EMAIL=PropertiesService.getScriptProperties().getProperty('HAULMATCH_ADMIN_EMAIL');
 const ADMIN_KEY=PropertiesService.getScriptProperties().getProperty('HAULMATCH_ADMIN_KEY');
 const TURNSTILE_SECRET=PropertiesService.getScriptProperties().getProperty('HAULMATCH_TURNSTILE_SECRET')||'';
@@ -407,9 +407,9 @@ function adminConsoleRender_(model) {
     const requestHtml = requests.length ? requests.map(function(row) {
       const ref = escape(row.reference);
       return '<article class="row">' +
-        '<div><b>' + ref + ' Â· ' + escape(row.transportType) + '</b>' +
+        '<div><b>' + ref + ' · ' + escape(row.transportType) + '</b>' +
         '<p>' + escape(row.collection) + ' â†’ ' + escape(row.delivery) + '</p>' +
-        '<span class="status">' + escape(row.status) + ' Â· ' + escape(row.cost) + ' credits Â· ' + escape(row.responses) + '/6 responses</span></div>' +
+        '<span class="status">' + escape(row.status) + ' · ' + escape(row.cost) + ' credits · ' + escape(row.responses) + '/6 responses</span></div>' +
         '<div class="actions">' +
           adminActionForm_(key, ref, 'PUBLISHED', 'Publish', 'primary') +
           adminCostForm_(key, ref, row.cost) +
@@ -614,4 +614,5 @@ function adminGoogleLoginPost_(p){try{var admin=adminGoogleVerifyIdToken_(String
 function adminGoogleActionPost_(p){try{var admin=adminGoogleSession_(p.adminKey),copy={};Object.keys(p).forEach(function(k){copy[k]=p[k];});copy.adminKey=ADMIN_KEY;audit_(SpreadsheetApp.openById(SHEET_ID),'ADMIN_GOOGLE_ACTION',String(p.reference||''),admin.email+' | '+String(p.consoleAction||'LOAD'));return adminGoogleReplaceSecret_(adminConsoleV3Post_(copy),p.adminKey,admin);}catch(e){return adminGoogleError_(e.message||String(e));}}
 function adminGoogleError_(message){return HtmlService.createHtmlOutput('<!doctype html><html><body style="margin:0;background:#071827;color:#fff;font:16px Arial;display:grid;place-items:center;min-height:100vh"><div style="background:#10334f;padding:28px;border-radius:18px;text-align:center"><h1>Admin access denied</h1><p style="color:#ffadb6">'+adminHtmlEscape_(message)+'</p><a style="color:#b7f52f" href="https://haulmatch.wykiesautomation.co.za/admin/">Return to Google Admin Sign-In</a></div></body></html>').setTitle('HaulMatch Admin Access').setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);}
 /* HAULMATCH FINAL ADMIN V3 + GOOGLE AUTH END */
+
 
