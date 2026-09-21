@@ -4,3 +4,5 @@
 .sandbox-btn{grid-column:1/-1;width:100%;border:1px solid #ffc857;border-radius:12px;padding:14px 18px;background:#3b2e0e;color:#ffe7a3;font-weight:950;font-size:16px;cursor:pointer}.sandbox-btn:hover{filter:brightness(1.15)}.sandbox-btn:disabled{opacity:.5;cursor:not-allowed}.sandbox-note{grid-column:1/-1;margin:0!important;color:#ffc857!important;font-size:12px}.sandbox-status{color:#ffc857}
 
 .mode-badge{display:inline-flex;margin:16px auto 0;padding:8px 13px;border-radius:999px;font-size:12px;font-weight:950}.mode-badge.sandbox{background:#4a3717;color:#ffe6a7;border:1px solid #ffc85788}.mode-badge.live{background:#173b29;color:#b8f4c9;border:1px solid #49dd8b88}
+
+.credit-login-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}.google-btn{background:#fff!important;color:#202124!important;border:1px solid #dadce0!important}.purchase-panel .notice strong{color:var(--lime);font-size:20px}@media(max-width:600px){.credit-login-grid{grid-template-columns:1fr}}

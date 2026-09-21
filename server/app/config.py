@@ -13,6 +13,7 @@ class Settings:
  payfast_merchant_id:str=os.getenv('HAULMATCH_PAYFAST_MERCHANT_ID','')
  payfast_merchant_key:str=os.getenv('HAULMATCH_PAYFAST_MERCHANT_KEY','')
  payfast_passphrase:str=os.getenv('HAULMATCH_PAYFAST_PASSPHRASE','')
+ neon_data_api_url:str=os.getenv('HAULMATCH_NEON_DATA_API_URL','https://ep-fancy-union-b1hu0o27.apirest.c-5.eu-central-1.aws.neon.tech/neondb/rest/v1').rstrip('/')
  def validate(self):
   e=[]
   if self.env=='production' and (self.secret_key=='dev-change' or len(self.secret_key)<48):e.append('HAULMATCH_SECRET_KEY must contain at least 48 characters')

@@ -1,69 +1,12 @@
 (() => {
-  const $ = id => document.getElementById(id);
-  let selectedPackId = null;
-  let paymentMode = 'disabled';
-  let token = localStorage.getItem('hmApiToken') || '';
-  const config = window.HAULMATCH_CONFIG || {};
-  const apiBaseUrl = String(config.apiBaseUrl || '').trim().replace(/\/$/, '');
-
-  async function api(path, options = {}) {
-    const headers = {'Content-Type':'application/json', ...(options.headers || {})};
-    if (token) headers.Authorization = `Bearer ${token}`;
-    if (!apiBaseUrl) throw new Error('HaulMatch payment API is not configured.');
-    const url = new URL(path, apiBaseUrl + '/').toString();
-    const response = await fetch(url, {...options, headers, mode:'cors'});
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(body.detail || body.error || 'Request failed');
-    return body;
-  }
-
-  async function load() {
-    const [status, packs] = await Promise.all([
-      api('/api/payments/payfast/status'),
-      api('/api/credit-packs')
-    ]);
-    paymentMode = status.mode;
-    $('modeBadge').textContent = status.mode === 'live' ? 'LIVE PAYMENTS' : 'PAYFAST SANDBOX';
-    $('modeBadge').className = status.mode === 'live' ? 'mode-badge live' : 'mode-badge sandbox';
-    $('checkoutButton').textContent = status.mode === 'live' ? 'Pay securely with PayFast' : 'Test with PayFast Sandbox';
-    document.querySelectorAll('[data-pack]').forEach(button => {
-      const pack = packs.find(x => x.code === button.dataset.pack);
-      if (!pack) { button.disabled = true; return; }
-      button.dataset.packId = pack.id;
-      button.addEventListener('click', () => {
-        selectedPackId = pack.id;
-        $('selectedPack').textContent = `${pack.name}: ${pack.credits} credits for R${(pack.price_cents/100).toLocaleString('en-ZA')}`;
-        $('checkoutButton').disabled = !status.checkout_enabled;
-        $('purchasePanel').scrollIntoView({behavior:'smooth', block:'center'});
-      });
-    });
-  }
-
-  $('loginButton').addEventListener('click', async () => {
-    try {
-      const data = await api('/api/accounts/login', {method:'POST', body:JSON.stringify({email:$('email').value.trim(),password:$('password').value})});
-      token = data.token; localStorage.setItem('hmApiToken', token);
-      $('purchaseMessage').textContent = 'Transporter signed in. Select a package and continue.';
-    } catch (error) { $('purchaseMessage').textContent = error.message; }
-  });
-
-  $('purchaseForm').addEventListener('submit', async event => {
-    event.preventDefault();
-    if (!token) { $('purchaseMessage').textContent = 'Sign in first.'; return; }
-    if (!selectedPackId) { $('purchaseMessage').textContent = 'Select a package first.'; return; }
-    try {
-      $('checkoutButton').disabled = true;
-      $('purchaseMessage').textContent = 'Creating secure PayFast checkout...';
-      const checkout = await api('/api/payments/payfast/checkout', {method:'POST', body:JSON.stringify({pack_id:selectedPackId})});
-      if (!checkout.configured) throw new Error('PayFast server credentials are not configured.');
-      const form = $('payfastForm'); form.action = checkout.checkout_url; form.innerHTML = '';
-      Object.entries(checkout.fields).forEach(([name,value]) => { const input=document.createElement('input');input.type='hidden';input.name=name;input.value=value;form.appendChild(input); });
-      form.submit();
-    } catch (error) {
-      $('purchaseMessage').textContent = error.message;
-      $('checkoutButton').disabled = false;
-    }
-  });
-
-  load().catch(error => $('purchaseMessage').textContent = error.message);
+ const $=id=>document.getElementById(id);let selectedPackId=null,checkoutEnabled=false;const cfg=window.HAULMATCH_CONFIG||{},base=String(cfg.apiBaseUrl||'').replace(/\/$/,'');
+ async function api(path,options={},auth=false){const headers={'Content-Type':'application/json',...(options.headers||{})};if(auth){if(!window.HMNEON?.state?.user)throw Error('Sign in with the linked approved transporter account first.');headers.Authorization='Bearer '+await HMNEON.jwtToken()}const r=await fetch(new URL(path,base+'/'),{...options,headers,mode:'cors'}),b=await r.json().catch(()=>({}));if(!r.ok)throw Error(b.detail||b.error||'Request failed');return b}
+ function render(){const signed=!!window.HMNEON?.state?.user;document.querySelectorAll('[data-neon-signed]').forEach(x=>x.classList.toggle('hidden',!signed));document.querySelectorAll('[data-neon-guest]').forEach(x=>x.classList.toggle('hidden',signed));$('neonSession').textContent=signed?'Signed in: '+(HMNEON.state.user.email||'Transporter'):'Not signed in';$('checkoutButton').disabled=!(signed&&selectedPackId&&checkoutEnabled)}
+ async function profile(){if(!HMNEON.state.user)return;const w=await HMNEON.wallet(),p=w.profile,c=Number(w.wallet.balance||0);$('transporterSummary').classList.remove('hidden');$('transporterSummary').innerHTML=`<b>${p.company||p.contact_name||p.reference}</b><br>${p.reference} · ${p.status}<br><strong>${c} credits</strong>`;$('purchaseMessage').textContent='Approved transporter verified. Select a package and continue.';render()}
+ async function load(){const [st,packs]=await Promise.all([api('/api/payments/payfast/status'),api('/api/credit-packs')]);checkoutEnabled=!!st.checkout_enabled;$('modeBadge').textContent=st.mode==='live'?'LIVE PAYMENTS':'PAYFAST SANDBOX';$('modeBadge').className=st.mode==='live'?'mode-badge live':'mode-badge sandbox';$('checkoutButton').textContent=st.mode==='live'?'Pay securely with PayFast':'Test with PayFast Sandbox';document.querySelectorAll('[data-pack]').forEach(btn=>{const p=packs.find(x=>x.code===btn.dataset.pack);if(!p){btn.disabled=true;return}btn.onclick=()=>{selectedPackId=p.id;$('selectedPack').textContent=`${p.name}: ${p.credits} credits for R${(p.price_cents/100).toLocaleString('en-ZA')}`;render();$('purchasePanel').scrollIntoView({behavior:'smooth',block:'center'})}});render()}
+ $('googleSignInButton').onclick=async()=>{try{$('purchaseMessage').textContent='Opening Google sign-in...';await HMNEON.signInGoogle()}catch(e){$('purchaseMessage').textContent=HMNEON.friendly(e)}};
+ $('neonSignInButton').onclick=async()=>{try{$('purchaseMessage').textContent='Signing in securely...';await HMNEON.signIn($('neonEmail').value,$('neonPassword').value);await profile()}catch(e){$('purchaseMessage').textContent=HMNEON.friendly(e)}};
+ $('signOutButton').onclick=async()=>{await HMNEON.signOut();$('transporterSummary').classList.add('hidden');$('purchaseMessage').textContent='Signed out.';render()};
+ window.addEventListener('hm:auth-changed',async e=>{render();if(e.detail?.signedIn)try{await profile()}catch(x){$('purchaseMessage').textContent=HMNEON.friendly(x)}});window.addEventListener('hm:neon-ready',async()=>{render();if(HMNEON.state.user)try{await profile()}catch(x){$('purchaseMessage').textContent=HMNEON.friendly(x)}});
+ $('purchaseForm').onsubmit=async e=>{e.preventDefault();if(!HMNEON?.state?.user){$('purchaseMessage').textContent='Sign in first.';return}if(!selectedPackId){$('purchaseMessage').textContent='Select a package first.';return}try{$('checkoutButton').disabled=true;$('purchaseMessage').textContent='Creating secure PayFast checkout...';const c=await api('/api/payments/payfast/neon-checkout',{method:'POST',body:JSON.stringify({pack_id:selectedPackId})},true);const f=$('payfastForm');f.action=c.checkout_url;f.innerHTML='';Object.entries(c.fields).forEach(([n,v])=>{const i=document.createElement('input');i.type='hidden';i.name=n;i.value=v;f.appendChild(i)});f.submit()}catch(x){$('purchaseMessage').textContent=x.message;render()}};load().catch(e=>$('purchaseMessage').textContent=e.message)
 })();

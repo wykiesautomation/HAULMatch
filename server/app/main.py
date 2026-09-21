@@ -1,8 +1,10 @@
 from pathlib import Path
 from uuid import uuid4
 from datetime import datetime
-import json,hashlib
-from fastapi import FastAPI,Depends,HTTPException,Request,UploadFile,File
+import json,hashlib,secrets,base64
+import httpx
+from sqlalchemy import text
+from fastapi import FastAPI,Depends,HTTPException,Request,UploadFile,File,Header
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
@@ -90,6 +92,31 @@ def payment_status():
  return {'mode':payfast_mode(),'configured':payfast_configured(),'checkout_enabled':payfast_configured()}
 @app.get('/api/credit-packs')
 def credit_packs(s=Depends(db)):return [{'id':p.id,'code':p.code,'name':p.name,'credits':p.credits,'price_cents':p.price_cents,'currency':'ZAR'} for p in s.query(CreditPack).filter_by(active=True).order_by(CreditPack.sort_order)]
+async def neon_transporter(authorization:str=Header(default=''),s=Depends(db)):
+ if not authorization.lower().startswith('bearer '):raise HTTPException(401,'Neon authentication required')
+ bearer_token=authorization.split(' ',1)[1].strip()
+ url=settings.neon_data_api_url+'/transporters?select=id,reference,contact_name,company,email,status,auth_subject&limit=1'
+ async with httpx.AsyncClient(timeout=12.0) as client:response=await client.get(url,headers={'Authorization':'Bearer '+bearer_token,'Accept':'application/json'})
+ if response.status_code!=200:raise HTTPException(401,'Invalid or expired Neon session')
+ rows=response.json()
+ if not rows:raise HTTPException(403,'This login is not linked to an approved transporter profile')
+ profile=rows[0]
+ if str(profile.get('status','')).upper()!='APPROVED':raise HTTPException(403,'Approved transporter account required')
+ try:
+  part=bearer_token.split('.')[1];part+='='*(-len(part)%4);claims=json.loads(base64.urlsafe_b64decode(part.encode()).decode());email=str(claims.get('email') or '').lower()
+ except Exception:email=''
+ if not email:raise HTTPException(401,'Neon session email missing')
+ account=s.query(Account).filter_by(email=email).first()
+ if not account:account=Account(email=email,full_name=profile.get('contact_name') or email,company=profile.get('company') or '',role='transporter',password_hash=hash_password(secrets.token_urlsafe(48)),approved=True,active=True);s.add(account);s.flush();audit(s,'NEON_ACCOUNT_LINKED',account.id,profile.get('reference',''),'PayFast checkout bridge')
+ else:account.role='transporter';account.approved=True;account.active=True
+ s.commit();s.refresh(account);return {'account':account,'profile':profile}
+
+def credit_neon_wallet(s,email,credits):
+ sql='UPDATE public.wallets AS w SET balance=COALESCE(w.balance,0)+:credits,updated_at=NOW() FROM public.transporters AS t, neon_auth."user" AS u WHERE w.transporter_id=t.id AND t.auth_subject=u.id::text AND lower(u.email)=lower(:email) RETURNING w.balance'
+ row=s.execute(text(sql),{'credits':credits,'email':email}).first()
+ if not row:raise RuntimeError('Linked Neon transporter wallet not found for completed payment')
+ return int(row[0])
+
 @app.post('/api/payments/payfast/checkout')
 def payment_checkout(x:dict,a=Depends(roles('transporter')),s=Depends(db)):
  pack=s.get(CreditPack,int(x.get('pack_id',0)))
@@ -97,6 +124,14 @@ def payment_checkout(x:dict,a=Depends(roles('transporter')),s=Depends(db)):
  order=PaymentOrder(reference='HMP-'+uuid4().hex[:14].upper(),account_id=a.id,pack_id=pack.id,credits=pack.credits,amount_cents=pack.price_cents,status='CHECKOUT_READY');s.add(order);s.flush();audit(s,'PAYMENT_CREATED',a.id,order.reference,pack.code);s.commit()
  if not payfast_configured():return {'configured':False,'reference':order.reference,'status':order.status}
  return {'configured':True,'reference':order.reference,'checkout_url':checkout_url(),'fields':checkout_fields(order,pack)}
+@app.post('/api/payments/payfast/neon-checkout')
+def neon_payment_checkout(x:dict,identity=Depends(neon_transporter),s=Depends(db)):
+ a=identity['account'];pack=s.get(CreditPack,int(x.get('pack_id',0)))
+ if not pack or not pack.active:raise HTTPException(404,'Credit pack unavailable')
+ order=PaymentOrder(reference='HMP-'+uuid4().hex[:14].upper(),account_id=a.id,pack_id=pack.id,credits=pack.credits,amount_cents=pack.price_cents,status='CHECKOUT_READY');s.add(order);s.flush();audit(s,'PAYMENT_CREATED',a.id,order.reference,pack.code+' / Neon transporter');s.commit()
+ if not payfast_configured():return {'configured':False,'reference':order.reference,'status':order.status}
+ return {'configured':True,'reference':order.reference,'checkout_url':checkout_url(),'fields':checkout_fields(order,pack)}
+
 @app.post('/api/payments/payfast/itn')
 async def payment_itn(request:Request,s=Depends(db)):
  form=dict(await request.form());raw=json.dumps(form,sort_keys=True);digest=hashlib.sha256(raw.encode()).hexdigest()
@@ -108,7 +143,7 @@ async def payment_itn(request:Request,s=Depends(db)):
  s.add(PaymentNotification(notification_hash=digest,payment_id=order.id,valid=valid,reason=reason,payload_json=raw))
  if not valid:order.status='INVALID';audit(s,'PAYMENT_REJECTED',None,order.reference,reason);s.commit();raise HTTPException(400,reason)
  if not order.credited:
-  account=s.get(Account,order.account_id);post_ledger(s,account,order.credits,'credit','PURCHASE_CREDIT','PayFast '+order.reference,payment_id=order.id);order.credited=True;order.status='COMPLETE';order.completed_at=datetime.utcnow();receipt=Receipt(reference='HMR-'+uuid4().hex[:12].upper(),account_id=account.id,payment_id=order.id,description=f'{order.credits} HaulMatch credits',amount_cents=order.amount_cents);s.add(receipt);audit(s,'WALLET_CREDITED',None,order.reference,str(order.credits))
+  account=s.get(Account,order.account_id);post_ledger(s,account,order.credits,'credit','PURCHASE_CREDIT','PayFast '+order.reference,payment_id=order.id);credit_neon_wallet(s,account.email,order.credits);order.credited=True;order.status='COMPLETE';order.completed_at=datetime.utcnow();receipt=Receipt(reference='HMR-'+uuid4().hex[:12].upper(),account_id=account.id,payment_id=order.id,description=f'{order.credits} HaulMatch credits',amount_cents=order.amount_cents);s.add(receipt);audit(s,'WALLET_CREDITED',None,order.reference,str(order.credits))
  s.commit();return {'status':'ok'}
 @app.get('/api/wallet')
 def wallet(a=Depends(current),s=Depends(db)):return {'credits':a.credit_balance,'transactions':[{'id':x.id,'direction':x.direction,'credits':x.credits,'before':x.balance_before,'after':x.balance_after,'type':x.transaction_type,'reason':x.reason,'created_at':x.created_at.isoformat()} for x in s.query(WalletTransaction).filter_by(account_id=a.id).order_by(WalletTransaction.id.desc()).limit(200)]}

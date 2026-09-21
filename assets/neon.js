@@ -71,7 +71,7 @@ async function signUp(name,email,password){
 
 async function signInGoogle(){
   if(!state.client)throw new Error('Neon is not ready.');
-  const callbackURL=window.location.origin+'/transport-leads/';
+  const callbackURL=window.location.origin+window.location.pathname;
   const {data,error}=await state.client.auth.signIn.social({provider:'google',callbackURL});
   if(error)throw error;
   return data;
@@ -83,6 +83,19 @@ async function signOut(){
   emit('hm:auth-changed',{signedIn:false,user:null});
 }
 
+async function jwtToken(){
+  if(!state.client||!state.user)throw new Error('Sign in with the linked transporter account first.');
+  if(typeof state.client.auth.token==='function'){
+    const {data,error}=await state.client.auth.token();
+    if(error)throw error;
+    if(data?.token)return data.token;
+  }
+  const result=await state.client.auth.getSession();
+  state.session=result?.data?.session||state.session;
+  const value=state.session?.access_token||state.session?.accessToken||state.session?.token;
+  if(!value)throw new Error('Unable to retrieve the secure Neon session token. Sign out and sign in again.');
+  return value;
+}
 async function ownProfile(){
   if(!state.user)throw new Error('Sign in as an approved transporter first.');
   const {data,error}=await state.client.from('transporters').select('id,reference,contact_name,company,email,status,moderation_status').limit(1);
@@ -135,6 +148,7 @@ window.HMNEON={
   signOut,
   ownProfile,
   wallet,
+  jwtToken,
   unlock,
   existingUnlock,
   friendly
