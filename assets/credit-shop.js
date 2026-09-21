@@ -3,11 +3,15 @@
   let selectedPackId = null;
   let paymentMode = 'disabled';
   let token = localStorage.getItem('hmApiToken') || '';
+  const config = window.HAULMATCH_CONFIG || {};
+  const apiBaseUrl = String(config.apiBaseUrl || '').trim().replace(/\/$/, '');
 
   async function api(path, options = {}) {
     const headers = {'Content-Type':'application/json', ...(options.headers || {})};
     if (token) headers.Authorization = `Bearer ${token}`;
-    const response = await fetch(path, {...options, headers});
+    if (!apiBaseUrl) throw new Error('HaulMatch payment API is not configured.');
+    const url = new URL(path, apiBaseUrl + '/').toString();
+    const response = await fetch(url, {...options, headers, mode:'cors'});
     const body = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(body.detail || body.error || 'Request failed');
     return body;

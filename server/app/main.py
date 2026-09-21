@@ -6,6 +6,7 @@ from fastapi import FastAPI,Depends,HTTPException,Request,UploadFile,File
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.cors import CORSMiddleware
 from .config import settings
 from .database import Base,engine,db,SessionLocal
 from .models import Account,Lead,Quote,Audit,CreditPack,PaymentOrder,PaymentNotification,WalletTransaction,LeadUnlock,ContactReveal,Dispute,Receipt,Vehicle,Driver,Job,JobEvent,Incident,Evidence,POD,Rating,BackupVerification
@@ -18,6 +19,16 @@ errors=settings.validate()
 if errors:raise RuntimeError('Production configuration invalid: '+'; '.join(errors))
 app=FastAPI(title='HaulMatch 360',version='Batch D',docs_url=None if settings.env=='production' else '/docs')
 app.add_middleware(TrustedHostMiddleware,allowed_hosts=list(settings.allowed_hosts))
+app.add_middleware(
+ CORSMiddleware,
+ allow_origins=[
+  'https://haulmatch.wykiesautomation.co.za',
+  'https://wykiesautomation.github.io'
+ ],
+ allow_credentials=True,
+ allow_methods=['GET','POST','OPTIONS'],
+ allow_headers=['Authorization','Content-Type']
+)
 site=Path('/app/site')
 app.mount('/assets',StaticFiles(directory=site/'assets'),name='assets')
 @app.on_event('startup')
