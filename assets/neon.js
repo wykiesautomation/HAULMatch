@@ -89,6 +89,24 @@ async function signInGoogle(){
   return data;
 }
 
+async function requestPasswordReset(email){
+  if(!state.client)throw new Error('Neon is not ready.');
+  const cleanEmail=String(email||'').trim().toLowerCase();
+  if(!cleanEmail)throw new Error('Enter the registered email address.');
+  const redirectTo=new URL('/reset-password/',window.location.origin).href;
+  const result=await state.client.auth.requestPasswordReset({email:cleanEmail,redirectTo,fetchOptions:{throw:true}});
+  if(result?.error)throw result.error;
+  return result?.data||result;
+}
+async function resetPassword(newPassword,tokenValue){
+  if(!state.client)throw new Error('Neon is not ready.');
+  const token=String(tokenValue||new URLSearchParams(window.location.search).get('token')||'').trim();
+  if(!token||token==='INVALID_TOKEN')throw new Error('This password reset link is invalid or has expired.');
+  if(String(newPassword||'').length<8)throw new Error('The new password must contain at least 8 characters.');
+  const result=await state.client.auth.resetPassword({newPassword:String(newPassword),token,fetchOptions:{throw:true}});
+  if(result?.error)throw result.error;
+  return result?.data||result;
+}
 async function signOut(){
   if(state.client)await state.client.auth.signOut();
   state.session=null;state.user=null;
@@ -157,6 +175,8 @@ window.HMNEON={
   signIn,
   signUp,
   signInGoogle,
+  requestPasswordReset,
+  resetPassword,
   signOut,
   ownProfile,
   wallet,
