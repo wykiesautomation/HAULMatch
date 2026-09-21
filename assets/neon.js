@@ -71,9 +71,21 @@ async function signUp(name,email,password){
 
 async function signInGoogle(){
   if(!state.client)throw new Error('Neon is not ready.');
-  const callbackURL=window.location.origin+window.location.pathname;
-  const {data,error}=await state.client.auth.signIn.social({provider:'google',callbackURL});
+  const callbackURL=new URL('/credit-shop/',window.location.origin).href;
+  const errorCallbackURL=new URL('/credit-shop/?auth_error=google',window.location.origin).href;
+  const result=await state.client.auth.signIn.social({
+    provider:'google',
+    callbackURL,
+    newUserCallbackURL:callbackURL,
+    errorCallbackURL,
+    disableRedirect:true
+  });
+  const error=result?.error;
   if(error)throw error;
+  const data=result?.data||result;
+  const redirectURL=data?.url||data?.redirectURL||data?.redirectUrl;
+  if(!redirectURL)throw new Error('Google sign-in did not return a redirect URL.');
+  window.location.assign(redirectURL);
   return data;
 }
 
