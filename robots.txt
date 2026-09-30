@@ -1,11 +1,18 @@
+# HaulMatch 360 production robots policy
+# Public marketplace and information pages may be crawled.
+
 User-agent: *
 Allow: /
+
+# Administration and internal operations
 Disallow: /admin/
 Disallow: /admin-free-test/
 Disallow: /finance-admin/
 Disallow: /finance-documents/
 Disallow: /monitoring/
 Disallow: /operations/
+
+# Customer, transporter and transaction workflows
 Disallow: /payments/
 Disallow: /refund-request/
 Disallow: /request-status/
@@ -14,6 +21,7 @@ Disallow: /appointments/
 Disallow: /pro-centre/
 Disallow: /submit-quote/
 Disallow: /tester-feedback/
+Disallow: /wallet/
 Disallow: /wallet-statement/
 
 Sitemap: https://haulmatch.wykiesautomation.co.za/sitemap.xml
